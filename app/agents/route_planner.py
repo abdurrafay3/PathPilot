@@ -1,8 +1,8 @@
 from agents import Agent, Runner
-from app.agents.geocoder import get_region_context, get_coordinates_from_address, produce_origin_destination_tool
+from app.agents.geocoder import produce_origin_destination_tool
 from app.agents.route_candidate import fetch_candidate_routes_tool
 from app.agents.waypoint_finder import find_waypoint_candidates_tool
-from app.schemas.agent_state import IntentOutput, RoutePlannerContext
+from app.schemas.agent_state import  RoutePlannerContext
 from app.schemas.route_planner import RoutePlannerOutput
 import logging
 
