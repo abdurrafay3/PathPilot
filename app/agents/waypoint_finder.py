@@ -165,8 +165,6 @@ async def find_waypoint_candidates(route_candidate_input: CandidateRouteAgentOut
                                 seen_waypoints[key] = waypoint_candidate
         waypoint_candidates.route_waypoints.append(RouteWaypointCandidate(route_id=route.route_id, candidates=list(seen_waypoints.values())))
         logger.info(f"\033[92mRoute {route.route_id} has {len(seen_waypoints)} unique waypoint candidates\033[0m")
-
-    logger.info(f"Printing the final waypoint candidates for all routes:\n\n {waypoint_candidates.model_dump_json(indent=2)}")
     return waypoint_candidates
 
 
