@@ -168,7 +168,6 @@ async def score_detours(candidate_route_output : CandidateRouteAgentOutput, wayp
     for route in waypoint_finder_output.route_waypoints:
         base_route = base_routes.get(route.route_id)
         for waypoint_candidate in route.candidates:
-            if 
             detour_route = await fetch_detour_route(
                 origin=geocoder_output.origin.coordinates,
                 destination=geocoder_output.destination.coordinates,
