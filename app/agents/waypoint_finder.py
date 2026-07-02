@@ -1,14 +1,25 @@
 import httpx
-from app.schemas.agent_state import CandidateRouteAgentOutput, RoutePlannerContext, RouteWaypointCandidate, WaypointFinderAgentOutput, RequiredStop, WayPointCandidate, Coordinates
+from app.config import color
+from app.schemas.agent_state import (
+    CandidateRouteAgentOutput,
+    IntentOutput,
+    RoutePlannerContext,
+    RouteWaypointCandidate,
+    WaypointFinderAgentOutput,
+    RequiredStop,
+    WayPointCandidate,
+    Coordinates,
+)
 import polyline
 import logging
-from agents import RunContextWrapper, function_tool
+from agents import Agent, RunContextWrapper, Runner, function_tool
 from app.config import settings
 from math import radians, cos, sin, asin, sqrt
 
 logger = logging.getLogger(__name__)
 
-GOOGLE_NEARBY_PLACES_URL="https://places.googleapis.com/v1/places:searchNearby"
+GOOGLE_NEARBY_PLACES_URL = "https://places.googleapis.com/v1/places:searchNearby"
+
 
 async def search_nearest_waypoints(coordinates: tuple, waypoint_type: str) -> list:
     """
@@ -20,56 +31,68 @@ async def search_nearest_waypoints(coordinates: tuple, waypoint_type: str) -> li
         list: A list of waypoints found near the provided coordinate.
     """
 
-    logger.info(f"\033[92mSearching for nearest waypoints of type '{waypoint_type}' near coordinates: {coordinates}\033[0m")
+    logger.info(
+        f"\033[92mSearching for nearest waypoints of type '{waypoint_type}' near coordinates: {coordinates}\033[0m"
+    )
     # we can just call the Nearby Places api here to find the nearest waypoints of the given type to the provided coordinate
     headers = {
         "Content-Type": "application/json",
         "X-Goog-Api-Key": settings.GOOGLE_MAPS_API_KEY,
-        "X-Goog-FieldMask": "places.id,places.displayName,places.formattedAddress,places.location,places.userRatingCount,places.types,places.rating,places.currentOpeningHours"
+        "X-Goog-FieldMask": "places.id,places.displayName,places.formattedAddress,places.location,places.userRatingCount,places.types,places.rating,places.currentOpeningHours",
     }
 
     body = {
-        "includedTypes" : [waypoint_type],
-        "maxResultCount" : 3,
-        "rankPreference" : "DISTANCE",
-        "locationRestriction" : {
-            "circle" : {
-                "center" : {
-                    "latitude" : coordinates[0],
-                    "longitude" : coordinates[1]
-                },
-                "radius" : 500.0
-                }
+        "includedTypes": [waypoint_type],
+        "maxResultCount": 10,
+        "rankPreference": "DISTANCE",
+        "locationRestriction": {
+            "circle": {
+                "center": {"latitude": coordinates[0], "longitude": coordinates[1]},
+                "radius": 1000.0,
             }
-        }
-    
+        },
+    }
+
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
-            response = await client.post(GOOGLE_NEARBY_PLACES_URL, headers=headers, json=body)
+            response = await client.post(
+                GOOGLE_NEARBY_PLACES_URL, headers=headers, json=body
+            )
             response.raise_for_status()
             data = response.json()
             return data.get("places", [])
     except httpx.RequestError as e:
-        logger.error(f"\033[91mAn error occurred while requesting the Google Nearby Places API: {e}, Error: {e.response.text}\033[0m")
-        return []   
+        logger.error(
+            f"\033[91mAn error occurred while requesting the Google Nearby Places API: {e}, Error: {e.response.text}\033[0m"
+        )
+        return []
     except httpx.HTTPStatusError as e:
-        logger.error(f"\033[91mNon-successful status code received from Google Nearby Places API: {e.response.status_code}, Error: {e.response.text}\033[0m")
-        return []   
+        logger.error(
+            f"\033[91mNon-successful status code received from Google Nearby Places API: {e.response.status_code}, Error: {e.response.text}\033[0m"
+        )
+        return []
 
 
 @function_tool
-async def find_waypoint_candidates_tool(ctx : RunContextWrapper[RoutePlannerContext]) -> WaypointFinderAgentOutput:
+async def find_waypoint_candidates_tool(
+    ctx: RunContextWrapper[RoutePlannerContext],
+) -> WaypointFinderAgentOutput:
     """
     This function identifies the unique waypoint candidates that lie on the provided route candidates. For example, if the user wants to go from A to B and wants a hospital on the way, this function will find all the hospitals that are on the route candidates and return them as unique waypoint candidates.
     Returns:
         CandidateRouteAgentOutput: An object containing the list of unique candidate routes.
     """
-    logger.info(f"\033[94mFinding waypoint candidates based on route candidates and required stops\033[0m")
+    logger.info(
+        f"\033[94mFinding waypoint candidates based on route candidates and required stops\033[0m"
+    )
     route_candidate_input = ctx.context.candidate_route_output
     required_stops = ctx.context.intent_output.required_stops
-    output = await find_waypoint_candidates(route_candidate_input, required_stops)
+    output = await find_waypoint_candidates(
+        route_candidate_input, required_stops, ctx.context.intent_output
+    )
     ctx.context.waypoint_finder_output = output
     return output
+
 
 def haversine_distance(lat1, lng1, lat2, lng2):
     """
@@ -92,6 +115,7 @@ def haversine_distance(lat1, lng1, lat2, lng2):
     r = 6371000  # Radius of Earth in meters
     return c * r
 
+
 def get_sampled_coordinates(decoded_polyline, max_samples=5):
     """
     Samples coordinates from a decoded polyline to reduce the number of points for waypoint searching.
@@ -104,8 +128,10 @@ def get_sampled_coordinates(decoded_polyline, max_samples=5):
     logger.info(f"\033[94mSampling coordinates from decoded polyline\033[0m")
     step = max(1, len(decoded_polyline) // max_samples)
     sampled_coordinates = decoded_polyline[::step][:max_samples]
-    # we will also round the coordinates to 3 decimal places to reduce the number of unique coordinates and avoid duplicates
-    rounded_sampled_coordinates = [(round(lat, 3), round(lng, 3)) for lat, lng in sampled_coordinates]
+    # we will also round the coordinates to 4 decimal places to reduce the number of unique coordinates and avoid duplicates
+    rounded_sampled_coordinates = [
+        (round(lat, 4), round(lng, 4)) for lat, lng in sampled_coordinates
+    ]
     # now we remove duplicates from the rounded sampled coordinates
     seen_sampled_coordinates = set()
     unique_sampled_coordinates = []
@@ -116,15 +142,18 @@ def get_sampled_coordinates(decoded_polyline, max_samples=5):
     return unique_sampled_coordinates
 
 
-
-async def find_waypoint_candidates(route_candidate_input: CandidateRouteAgentOutput, required_stops: list[RequiredStop]) -> WaypointFinderAgentOutput:
+async def find_waypoint_candidates(
+    route_candidate_input: CandidateRouteAgentOutput,
+    required_stops: list[RequiredStop],
+    intent_output: IntentOutput,
+) -> WaypointFinderAgentOutput:
     """
     This function identifies the unique waypoint candidates that lie on the provided route candidates. For example, if the user wants to go from A to B and wants a hospital on the way, this function will find all the hospitals that are on the route candidates and return them as unique waypoint candidates.
     Returns:
         WaypointFinderAgentOutput: An object containing the list of unique waypoint candidates.
     """
 
-    waypoint_candidates =WaypointFinderAgentOutput(route_waypoints=[])
+    waypoint_candidates = WaypointFinderAgentOutput(route_waypoints=[])
     # first get the decoded polylines for each route candidate
     for route in route_candidate_input.candidate_routes:
         if route.polyline:
@@ -134,8 +163,12 @@ async def find_waypoint_candidates(route_candidate_input: CandidateRouteAgentOut
             sampled_coordinates = get_sampled_coordinates(decoded_polyline)
             for required_stop in required_stops:
                 for route_lat, route_lng in sampled_coordinates:
-                    nearest_waypoints = await search_nearest_waypoints((route_lat, route_lng), required_stop.place_type)
-                    logger.info(f"\033[94m Sampled coordinate: ({route_lat}, {route_lng})\033[0m")
+                    nearest_waypoints = await search_nearest_waypoints(
+                        (route_lat, route_lng), required_stop.place_type
+                    )
+                    logger.info(
+                        f"\033[94m Sampled coordinate: ({route_lat}, {route_lng})\033[0m"
+                    )
                     for waypoint in nearest_waypoints:
                         waypoint_id = waypoint.get("id")
                         name = waypoint.get("displayName", {}).get("text")
@@ -143,9 +176,13 @@ async def find_waypoint_candidates(route_candidate_input: CandidateRouteAgentOut
                         lng = waypoint.get("location", {}).get("longitude")
                         coordinates = Coordinates(lat=lat, lng=lng)
                         near_route_id = route.route_id
-                        distance_from_route_metres = haversine_distance(lat, lng, route_lat, route_lng)
+                        distance_from_route_metres = haversine_distance(
+                            lat, lng, route_lat, route_lng
+                        )
                         rating = waypoint.get("rating")
-                        open_now = waypoint.get("currentOpeningHours", {}).get("openNow")
+                        open_now = waypoint.get("currentOpeningHours", {}).get(
+                            "openNow"
+                        )
                         waypoint_candidate = WayPointCandidate(
                             name=name,
                             place_type=required_stop.place_type,
@@ -153,24 +190,86 @@ async def find_waypoint_candidates(route_candidate_input: CandidateRouteAgentOut
                             near_route_id=near_route_id,
                             distance_from_route_metres=distance_from_route_metres,
                             rating=rating,
-                            open_now=open_now
+                            open_now=open_now,
                         )
 
                         key = (near_route_id, waypoint_id)
                         if key not in seen_waypoints:
                             seen_waypoints[key] = waypoint_candidate
-                            logger.info(f"\033[95mWaypoint candidate found. Name : {waypoint_candidate.name}\033[0m")
+                            logger.info(
+                                f"\033[95mWaypoint candidate found. Name : {waypoint_candidate.name}\033[0m"
+                            )
                         else:
-                            if seen_waypoints[key].distance_from_route_metres > distance_from_route_metres:
+                            if (
+                                seen_waypoints[key].distance_from_route_metres
+                                > distance_from_route_metres
+                            ):
                                 seen_waypoints[key] = waypoint_candidate
-        waypoint_candidates.route_waypoints.append(RouteWaypointCandidate(route_id=route.route_id, candidates=list(seen_waypoints.values())))
-        logger.info(f"\033[92mRoute {route.route_id} has {len(seen_waypoints)} unique waypoint candidates\033[0m")
-    return waypoint_candidates
+        waypoint_candidates.route_waypoints.append(
+            RouteWaypointCandidate(
+                route_id=route.route_id, candidates=list(seen_waypoints.values())
+            )
+        )
+        logger.info(
+            f"\033[92mRoute {route.route_id} has {len(seen_waypoints)} unique waypoint candidates\033[0m"
+        )
+    classified_result = await classify_waypoint_candidates(
+        waypoint_candidates, intent_output
+    )
+    return classified_result
 
 
+async def classify_waypoint_candidates(
+    waypoint_candidates: WaypointFinderAgentOutput, intent_output: IntentOutput
+) -> WaypointFinderAgentOutput:
+    """
+    This function classifies the waypoint candidates based on the required stops. For example, if the user wants a hospital on the way, this function will classify the waypoint candidates as hospitals.
+    Returns:
+        WaypointFinderAgentOutput: An object containing the classified waypoint candidates.
+    """
 
+    system_prompt = """
+    You are a strict waypoint classification agent for a route planning app.
 
+    Your task is to filter waypoint candidates based on the user's required stops.
 
+    You will receive:
+    1. The user's structured intent.
+    2. A list of waypoint candidates returned by Google Places.
 
+    You must return only the waypoint candidates that truly satisfy the required stop type.
 
+    Be strict.
 
+    Important rules:
+    - If the user requested a hospital, accept only real hospitals, emergency departments,
+    hospital buildings, or clearly named hospital medical centers.
+    - Reject chiropractors, Chinese medicine practitioners, private doctor clinics,
+    dental clinics, animal clinics, diagnostic imaging centers, beauty clinics,
+    wellness centers, and generic medical offices unless they are clearly part of a real hospital.
+    - If the candidate is ambiguous, reject it.
+    - Do not invent new waypoint candidates.
+    - Do not change coordinates, route IDs, ratings, open_now values, or distances.
+    - Preserve the original output schema exactly.
+    - Keep route_id groups the same.
+    - Only remove invalid candidates from each route's candidates list.
+    """
+
+    logger.info(f"\033[94mRunning Waypoint Classification Tool\033[0m")
+
+    old_len = sum(len(route.candidates) for route in waypoint_candidates.route_waypoints)
+    validator_agent = Agent(
+        name="waypoint classifier",
+        instructions=system_prompt,
+        model="gpt-4o-mini",
+        output_type=WaypointFinderAgentOutput,
+    )
+
+    user_prompt = f"User's intent: \n\n {intent_output.model_dump_json(indent=2)}\n\n Waypoint candidates: \n\n {waypoint_candidates.model_dump_json(indent=2)}\n\n Please classify the waypoint candidates based on the user's required stops and return the filtered output in the same schema."
+
+    response = await Runner.run(validator_agent, input=user_prompt, max_turns=1)
+    new_len = sum(len(route.candidates) for route in response.final_output.route_waypoints)
+    logger.info(
+        f"{color.BRIGHT_GREEN}Reduced {old_len} waypoints to {new_len} waypoints after classification.{color.RESET}"
+    )
+    return response.final_output

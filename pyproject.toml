@@ -11,3 +11,8 @@ dependencies = [
     "pydantic>=2.13.4",
     "pydantic-settings>=2.14.2",
 ]
+
+[dependency-groups]
+dev = [
+    "black>=26.5.1",
+]
