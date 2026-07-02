@@ -29,7 +29,9 @@ current_location = Coordinates(
 context = RoutePlannerContext(
     intent_output=None,
     geocoder_output=None,
-    candidate_route_output=None
+    candidate_route_output=None,
+    waypoint_finder_output=None,
+    detour_scorer_output=None
 )
 
 async def main():

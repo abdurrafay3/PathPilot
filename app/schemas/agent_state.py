@@ -28,14 +28,7 @@ class CandidateRoute(BaseModel):
     distance_metres : float | None = Field(default=None, description="The estimated distance of the route candidate in meters.")
     polyline : str | None = Field(default=None, description="The encoded polyline representing the route candidate's path on a map.")
 
-class WayPointCandidate(BaseModel):
-    name : str = Field(description="The name of the waypoint candidate.")
-    place_type : str = Field(description="The type of the waypoint candidate, e.g., restaurant, gas station.")
-    coordinates : Coordinates = Field(description="The coordinates of the waypoint candidate.")
-    near_route_id : str | None = Field(default=None, description="The route ID of the route near which the waypoint candidate is located, if applicable.")
-    distance_from_route_metres : float | None = Field(default=None, description="The distance in meters from the waypoint candidate to the nearest route, if applicable.")
-    rating : float | None = Field(default=None, description="The rating of the waypoint candidate, if applicable.")
-    open_now : bool | None = Field(default=None, description="Indicates whether the waypoint candidate is currently open or not, if applicable.")
+
 # ===========================
 # INTENT NORMALIZATION SCHEMA
 # ===========================
@@ -72,6 +65,15 @@ class CandidateRouteAgentOutput(BaseModel):
 # ===========================
 # WAYPOINT FINDER AGENT
 # ===========================
+class WayPointCandidate(BaseModel):
+    name : str = Field(description="The name of the waypoint candidate.")
+    place_type : str = Field(description="The type of the waypoint candidate, e.g., restaurant, gas station.")
+    coordinates : Coordinates = Field(description="The coordinates of the waypoint candidate.")
+    near_route_id : str | None = Field(default=None, description="The route ID of the route near which the waypoint candidate is located, if applicable.")
+    distance_from_route_metres : float | None = Field(default=None, description="The distance in meters from the waypoint candidate to the nearest route, if applicable.")
+    rating : float | None = Field(default=None, description="The rating of the waypoint candidate, if applicable.")
+    open_now : bool | None = Field(default=None, description="Indicates whether the waypoint candidate is currently open or not, if applicable.")
+
 class RouteWaypointCandidate(BaseModel):
     route_id: str = Field(description="The unique identifier for the route associated with the waypoint candidate.")
     candidates : list[WayPointCandidate] = Field(description="A list of waypoint candidates associated with the route.")
@@ -82,10 +84,17 @@ class WaypointFinderAgentOutput(BaseModel):
 # ===========================
 # DETOUR SCORER AGENT
 # ===========================
+class DetourRoute(BaseModel):
+    route_id : str = Field(description="The unique identifier for the detour route.")
+    duration_minutes : int = Field(description="The estimated duration of the detour route in minutes.")
+    distance_metres : float | None = Field(default=None, description="The estimated distance of the detour route in meters.")
+    polyline : str | None = Field(default=None, description="The encoded polyline for non-transit detour routes")
+    legs : list[CandidateRoute] = Field(default_factory=list, description="A list of legs for transit detour routes")
+    
 class DetourScore(BaseModel):
     base_route: CandidateRoute = Field(description="The base route against which the detour score is calculated.")
     waypoint : WayPointCandidate = Field(description="The waypoint for which the detour score is calculated.")
-    detour_route: CandidateRoute = Field(description="The detour route that includes the waypoint.")
+    detour_route: DetourRoute = Field(description="The detour route that includes the waypoint.")
     detour_minutes : int = Field(description="The additional time in minutes added to the base route due to the detour.")
     score : float = Field(description="The score assigned to the detour, which can be used for ranking or comparison purposes.")
 
@@ -117,3 +126,5 @@ class RoutePlannerContext:
     intent_output: IntentOutput
     geocoder_output: GeocoderAgentOutput
     candidate_route_output: CandidateRouteAgentOutput
+    waypoint_finder_output: WaypointFinderAgentOutput
+    detour_scorer_output: DetourScorerOutput | None = None

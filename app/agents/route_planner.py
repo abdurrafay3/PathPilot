@@ -34,7 +34,19 @@ async def plan_route(ctx: RoutePlannerContext) -> RoutePlannerOutput:
     """
     logger.info(f"\033[92mPlanning route for user input\033[0m")
 
-    user_prompt = f"User prompt: {ctx.intent_output.cleaned_prompt}\n\nPlease plan the route using the provided tools and return the output in the specified schema."
+    user_prompt = f"""User prompt: {ctx.intent_output.cleaned_prompt}\n\nPlease plan the route using the provided tools and return the output in the specified schema.
+    Call tools in this exact order:
+    1. produce_origin_destination_tool exactly once
+    2. fetch_candidate_routes_tool exactly once
+    3. find_waypoint_candidates_tool exactly once if required stops exist
+    4. score_detours_tool exactly once if waypoint candidates exist
+    5. After score_detours_tool returns, immediately return the final output.
+
+    Never call fetch_candidate_routes_tool again after waypoint candidates or detour scores exist.
+    Never call find_waypoint_candidates_tool again after detour scores exist.
+    Never call the same tool more than once.
+    
+    """
     tools = [produce_origin_destination_tool, fetch_candidate_routes_tool, find_waypoint_candidates_tool, score_detours_tool]
     route_planner = Agent(name="route_planner", instructions=system_prompt, model="gpt-4o-mini", output_type=RoutePlannerOutput, tools=tools)
     route_planner_runner = await Runner.run(starting_agent=route_planner, input=user_prompt, context=ctx)
