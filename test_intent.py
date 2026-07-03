@@ -31,7 +31,8 @@ context = RoutePlannerContext(
     geocoder_output=None,
     candidate_route_output=None,
     waypoint_finder_output=None,
-    detour_scorer_output=None
+    detour_scorer_output=None,
+    candidate_route_scorer_output=None,
 )
 
 async def main():
