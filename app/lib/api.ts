@@ -26,7 +26,7 @@ export interface LocationCoords {
 }
 
 const API_ENDPOINT = 'https://pathpilot-bruu.onrender.com/plan_route'
-const API_TIMEOUT = 60000 // 60 seconds
+const API_TIMEOUT = 120000 // 120 seconds
 
 export async function planRoute(
   userInput: string,
@@ -56,11 +56,14 @@ export async function planRoute(
   } catch (error) {
     if (error instanceof Error) {
       if (error.name === 'AbortError') {
-        throw new Error('Request timed out. Please try again.')
+        throw new Error('Request took too long (exceeded 120 seconds). The service may be processing another request. Please try again in a moment.')
+      }
+      if (error.message.includes('Server error: 5')) {
+        throw new Error('The route planning service encountered an error. This may be due to:\n• The location or destination being outside service coverage\n• Server overload (try again shortly)\n• Invalid location format')
       }
       throw error
     }
-    throw new Error('Failed to connect to the server')
+    throw new Error('Failed to connect to the server. Please check your internet connection.')
   } finally {
     clearTimeout(timeoutId)
   }

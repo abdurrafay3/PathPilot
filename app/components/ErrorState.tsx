@@ -25,12 +25,14 @@ export default function ErrorState({ error }: ErrorStateProps) {
           <h3 className="text-lg font-medium text-red-900">
             Unable to plan route
           </h3>
-          <p className="mt-2 text-sm text-red-700">
+          <p className="mt-2 text-sm text-red-700 whitespace-pre-wrap">
             {error}
           </p>
-          <p className="mt-3 text-xs text-red-600">
-            Please try again with a different search query.
-          </p>
+          <div className="mt-4 text-xs text-red-600 space-y-1">
+            <p>• The route planning service is processing your request</p>
+            <p>• Please wait a moment and try again</p>
+            <p>• Try a more specific location (e.g., "restaurant near Central")</p>
+          </div>
         </div>
       </div>
     </div>
