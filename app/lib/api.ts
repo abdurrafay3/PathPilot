@@ -13,11 +13,12 @@ export interface RouteResponse {
   final_route: {
     waypoint: Waypoint
     route_polyline: string
-  }
+  } | null
   accepted_routes: Array<{
     waypoint: Waypoint
     route_polyline: string
   }>
+  status?: string
 }
 
 export interface LocationCoords {
@@ -25,7 +26,7 @@ export interface LocationCoords {
   lng: number
 }
 
-const API_ENDPOINT = 'https://pathpilot-bruu.onrender.com/plan_route'
+const API_ENDPOINT = 'https://studied-hacker-lucrative.ngrok-free.dev/plan_route'
 const API_TIMEOUT = 120000 // 120 seconds
 
 export async function planRoute(
@@ -52,7 +53,19 @@ export async function planRoute(
       throw new Error(`Server error: ${response.status}`)
     }
 
-    return response.json()
+    const data = await response.json()
+    
+    // Handle "no_valid_route_found" status
+    if (data.status === 'no_valid_route_found') {
+      throw new Error('No valid route found for the given search. Try a different destination or location.')
+    }
+    
+    // Validate response structure
+    if (!data.final_route && (!data.accepted_routes || data.accepted_routes.length === 0)) {
+      throw new Error('Unexpected response format from the server.')
+    }
+    
+    return data
   } catch (error) {
     if (error instanceof Error) {
       if (error.name === 'AbortError') {
@@ -61,6 +74,10 @@ export async function planRoute(
       if (error.message.includes('Server error: 5')) {
         throw new Error('The route planning service encountered an error. This may be due to:\n• The location or destination being outside service coverage\n• Server overload (try again shortly)\n• Invalid location format')
       }
+      if (error.message.includes('Failed to fetch')) {
+        throw new Error('Network error connecting to the route planning service. This may be a CORS issue or the service may be temporarily unavailable. Try again shortly.')
+      }
+      console.log('[v0] API Error:', error.message)
       throw error
     }
     throw new Error('Failed to connect to the server. Please check your internet connection.')
