@@ -36,7 +36,7 @@ context = RoutePlannerContext(
 
 async def main():
     region_context = await get_region_context(current_location)
-    intent_output = await normalize_intent("take me to centrl with a clinic on the way and don't walk too much and I want to take public transport only", current_location=current_location, region_context=region_context)
+    intent_output = await normalize_intent("take me to centrl with an ATM on the way and don't walk too much and I want to take public transport only", current_location=current_location, region_context=region_context)
     context.intent_output = intent_output
     candidate_routes = await plan_route(context)
     logger.info(f"\033[92mCandidate routes are now fetched!\033[0m")
