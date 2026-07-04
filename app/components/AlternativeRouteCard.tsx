@@ -1,13 +1,10 @@
 'use client'
 
-import { type Waypoint } from '@/lib/api'
+import { type AcceptedRoute } from '@/lib/api'
 import WaypointDetails from './WaypointDetails'
 
 interface AlternativeRouteCardProps {
-  route: {
-    waypoint: Waypoint
-    route_polyline: string
-  }
+  route: AcceptedRoute
   index: number
 }
 

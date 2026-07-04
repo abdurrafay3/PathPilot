@@ -1,17 +1,22 @@
 'use client'
 
-import { type Waypoint } from '@/lib/api'
+import { type FinalRoute } from '@/lib/api'
 import WaypointDetails from './WaypointDetails'
 
 interface FinalRouteCardProps {
-  route: {
-    waypoint: Waypoint
-    route_polyline: string
-  }
+  route: FinalRoute | null
 }
 
 export default function FinalRouteCard({ route }: FinalRouteCardProps) {
-  const { waypoint, route_polyline } = route
+  if (!route) {
+    return (
+      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+        <p className="text-yellow-800">No recommended route found.</p>
+      </div>
+    )
+  }
+
+  const { waypoint } = route
 
   return (
     <div className="rounded-xl shadow-lg overflow-hidden border border-border bg-white hover:shadow-xl transition-shadow">

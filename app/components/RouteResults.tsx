@@ -3,7 +3,7 @@
 import { type RouteResponse, type LocationCoords } from '@/lib/api'
 import FinalRouteCard from './FinalRouteCard'
 import AlternativeRoutesSection from './AlternativeRoutesSection'
-import MapPlaceholder from './MapPlaceholder'
+import RouteMap from './RouteMap'
 
 interface RouteResultsProps {
   result: RouteResponse
@@ -13,8 +13,11 @@ interface RouteResultsProps {
 export default function RouteResults({ result, origin }: RouteResultsProps) {
   return (
     <div className="space-y-8">
-      {/* Map Placeholder */}
-      <MapPlaceholder />
+      {/* Map */}
+      <RouteMap 
+        finalRoute={result.final_route} 
+        alternativeRoutes={result.accepted_routes?.slice(0, 3)}
+      />
 
       {/* Final Route Section */}
       <div>
@@ -26,7 +29,7 @@ export default function RouteResults({ result, origin }: RouteResultsProps) {
 
       {/* Alternative Routes Section */}
       {result.accepted_routes && result.accepted_routes.length > 0 && (
-        <AlternativeRoutesSection routes={result.accepted_routes} />
+        <AlternativeRoutesSection routes={result.accepted_routes.slice(0, 3)} />
       )}
     </div>
   )

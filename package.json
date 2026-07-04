@@ -23,14 +23,17 @@
   },
   "homepage": "https://github.com/abdurrafay3/PathPilot#readme",
   "dependencies": {
+    "@mapbox/polyline": "^1.2.1",
     "@tailwindcss/postcss": "^4.3.2",
     "@types/node": "^26.1.0",
     "@types/react": "^19.2.17",
     "autoprefixer": "^10.5.2",
+    "leaflet": "^1.9.4",
     "next": "^16.2.10",
     "postcss": "^8.5.16",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
+    "react-leaflet": "^5.0.0",
     "tailwindcss": "^4.3.2",
     "typescript": "^6.0.3"
   }

@@ -9,15 +9,28 @@ export interface Waypoint {
   open_now: boolean
 }
 
-export interface RouteResponse {
-  final_route: {
-    waypoint: Waypoint
-    route_polyline: string
-  } | null
-  accepted_routes: Array<{
-    waypoint: Waypoint
-    route_polyline: string
+export interface RoutePolylines {
+  polyline: string
+  legs?: Array<{
+    polyline: string
   }>
+}
+
+export interface FinalRoute {
+  waypoint: Waypoint
+  base_route: RoutePolylines
+  detour_route: RoutePolylines
+}
+
+export interface AcceptedRoute {
+  waypoint: Waypoint
+  base_route: RoutePolylines
+  detour_route: RoutePolylines
+}
+
+export interface RouteResponse {
+  final_route: FinalRoute | null
+  accepted_routes: AcceptedRoute[]
   status?: string
 }
 
