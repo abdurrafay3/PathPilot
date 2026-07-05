@@ -45,16 +45,16 @@ export default function RouteMap({ finalRoute, alternativeRoutes = [] }: RouteMa
             allCoords.push(...baseCoords)
             const polyline = L.polyline(
               baseCoords.map(c => [c.lat, c.lng]),
-              { color: '#0EA5E9', weight: 12, opacity: 0.85, lineCap: 'round', lineJoin: 'round' }
+              { color: '#0EA5E9', weight: 5, opacity: 0.8, lineCap: 'round', lineJoin: 'round' }
             )
             
             // Add hover effects
             polyline.bindPopup('<b>Base Route</b>', { closeButton: true })
             polyline.on('mouseover', function() {
-              this.setStyle({ weight: 16, opacity: 1 })
+              this.setStyle({ weight: 7, opacity: 1 })
             })
             polyline.on('mouseout', function() {
-              this.setStyle({ weight: 12, opacity: 0.85 })
+              this.setStyle({ weight: 5, opacity: 0.8 })
             })
             
             polyline.addTo(map)
@@ -64,81 +64,41 @@ export default function RouteMap({ finalRoute, alternativeRoutes = [] }: RouteMa
 
         // Decode and draw detour route - to the waypoint
         if (finalRoute.detour_route) {
-          // Transit routes have multiple legs with different colors
-          // Non-transit routes have a single polyline
+          // Combine all legs into a single route with one color
+          const detourCoords: LatLng[] = []
+          
           if (finalRoute.detour_route.legs && Array.isArray(finalRoute.detour_route.legs)) {
-            // Multiple legs - each leg gets a different color and travel mode label
-            const transitColors = ['#F59E0B', '#EC4899', '#8B5CF6', '#06B6D4', '#10B981', '#F97316']
-            const transitModeLabels: Record<string, string> = {
-              'TRANSIT': 'Transit',
-              'WALKING': 'Walking',
-              'DRIVING': 'Driving',
-              'bus': 'Bus',
-              'train': 'Train',
-              'walk': 'Walk',
-              'drive': 'Drive',
-            }
-            
-            const totalLegs = finalRoute.detour_route.legs.length
-            let legIndex = 0
-            finalRoute.detour_route.legs.forEach((leg) => {
+            // Multiple legs - combine all into single polyline
+            finalRoute.detour_route.legs.forEach(leg => {
               if (leg.polyline) {
                 const legCoords = decodePolyline(leg.polyline)
-                if (legCoords.length > 0) {
-                  const color = transitColors[legIndex % transitColors.length]
-                  const travelMode = leg.travel_mode || 'TRANSIT'
-                  const modeLabel = transitModeLabels[travelMode] || travelMode
-                  
-                  // Offset overlapping lines so they appear side-by-side
-                  const offset = (legIndex - Math.floor(totalLegs / 2)) * 0.0002
-                  const offsetCoords = legCoords.map(c => ({
-                    lat: c.lat + offset,
-                    lng: c.lng + offset
-                  }))
-                  
-                  const polyline = L.polyline(
-                    offsetCoords.map(c => [c.lat, c.lng]),
-                    { color, weight: 12, opacity: 0.85, lineCap: 'round', lineJoin: 'round' }
-                  )
-                  
-                  // Add hover tooltip and highlighting
-                  polyline.bindPopup(`<b>${modeLabel}</b>`, { closeButton: true })
-                  polyline.on('mouseover', function() {
-                    this.setStyle({ weight: 16, opacity: 1 })
-                  })
-                  polyline.on('mouseout', function() {
-                    this.setStyle({ weight: 12, opacity: 0.85 })
-                  })
-                  
-                  polyline.addTo(map)
-                  legIndex++
-                  allCoords.push(...legCoords)
-                  legCoords.forEach(c => bounds.extend([c.lat, c.lng]))
-                }
+                detourCoords.push(...legCoords)
               }
             })
           } else if (finalRoute.detour_route.polyline) {
-            // Single polyline (for non-transit routes)
-            const detourCoords = decodePolyline(finalRoute.detour_route.polyline)
-            if (detourCoords.length > 0) {
-              allCoords.push(...detourCoords)
-              const polyline = L.polyline(
-                detourCoords.map(c => [c.lat, c.lng]),
-                { color: '#F59E0B', weight: 12, opacity: 0.85, lineCap: 'round', lineJoin: 'round' }
-              )
-              
-              // Add hover effects
-              polyline.bindPopup('<b>Route to Waypoint</b>', { closeButton: true })
-              polyline.on('mouseover', function() {
-                this.setStyle({ weight: 16, opacity: 1 })
-              })
-              polyline.on('mouseout', function() {
-                this.setStyle({ weight: 12, opacity: 0.85 })
-              })
-              
-              polyline.addTo(map)
-              detourCoords.forEach(c => bounds.extend([c.lat, c.lng]))
-            }
+            // Single polyline
+            const coords = decodePolyline(finalRoute.detour_route.polyline)
+            detourCoords.push(...coords)
+          }
+
+          if (detourCoords.length > 0) {
+            allCoords.push(...detourCoords)
+            const polyline = L.polyline(
+              detourCoords.map(c => [c.lat, c.lng]),
+              { color: '#F59E0B', weight: 5, opacity: 0.8, lineCap: 'round', lineJoin: 'round' }
+            )
+            
+            // Add hover effects
+            polyline.bindPopup('<b>Route to Waypoint</b>', { closeButton: true })
+            polyline.on('mouseover', function() {
+              this.setStyle({ weight: 7, opacity: 1 })
+            })
+            polyline.on('mouseout', function() {
+              this.setStyle({ weight: 5, opacity: 0.8 })
+            })
+            
+            polyline.addTo(map)
+            detourCoords.forEach(c => bounds.extend([c.lat, c.lng]))
           }
         }
 
