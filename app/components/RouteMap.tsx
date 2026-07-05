@@ -51,31 +51,40 @@ export default function RouteMap({ finalRoute, alternativeRoutes = [] }: RouteMa
           }
         }
 
-        // Decode and draw detour route (bright orange) - to the waypoint
+        // Decode and draw detour route - to the waypoint
         if (finalRoute.detour_route) {
-          const detourCoords: LatLng[] = []
-          
+          // Transit routes have multiple legs with different colors
+          // Non-transit routes have a single polyline
           if (finalRoute.detour_route.legs && Array.isArray(finalRoute.detour_route.legs)) {
-            // Multiple legs
+            // Multiple legs - each leg gets a different color for transit visualization
+            const transitColors = ['#F59E0B', '#EC4899', '#8B5CF6', '#06B6D4', '#10B981', '#F97316']
+            let legIndex = 0
             finalRoute.detour_route.legs.forEach(leg => {
               if (leg.polyline) {
                 const legCoords = decodePolyline(leg.polyline)
-                detourCoords.push(...legCoords)
+                if (legCoords.length > 0) {
+                  const color = transitColors[legIndex % transitColors.length]
+                  L.polyline(
+                    legCoords.map(c => [c.lat, c.lng]),
+                    { color, weight: 7, opacity: 1, lineCap: 'round', lineJoin: 'round' }
+                  ).addTo(map)
+                  legIndex++
+                  allCoords.push(...legCoords)
+                  legCoords.forEach(c => bounds.extend([c.lat, c.lng]))
+                }
               }
             })
           } else if (finalRoute.detour_route.polyline) {
             // Single polyline (for non-transit routes)
-            const coords = decodePolyline(finalRoute.detour_route.polyline)
-            detourCoords.push(...coords)
-          }
-
-          if (detourCoords.length > 0) {
-            allCoords.push(...detourCoords)
-            L.polyline(
-              detourCoords.map(c => [c.lat, c.lng]),
-              { color: '#F59E0B', weight: 7, opacity: 1, lineCap: 'round', lineJoin: 'round' }
-            ).addTo(map)
-            detourCoords.forEach(c => bounds.extend([c.lat, c.lng]))
+            const detourCoords = decodePolyline(finalRoute.detour_route.polyline)
+            if (detourCoords.length > 0) {
+              allCoords.push(...detourCoords)
+              L.polyline(
+                detourCoords.map(c => [c.lat, c.lng]),
+                { color: '#F59E0B', weight: 7, opacity: 1, lineCap: 'round', lineJoin: 'round' }
+              ).addTo(map)
+              detourCoords.forEach(c => bounds.extend([c.lat, c.lng]))
+            }
           }
         }
 
@@ -163,6 +172,10 @@ export default function RouteMap({ finalRoute, alternativeRoutes = [] }: RouteMa
     return () => {
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove()
+        mapInstanceRef.current = null
+      }
+      if (mapRef.current) {
+        mapRef.current.innerHTML = ''
       }
     }
   }, [finalRoute, alternativeRoutes])
