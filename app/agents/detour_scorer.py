@@ -285,7 +285,6 @@ async def score_detours(candidate_route_output : CandidateRouteAgentOutput, wayp
             logger.warning(f"Base route with ID {route.route_id} not found in candidate routes. Skipping scoring for this route.")
             continue  
         for waypoint_candidate in route.candidates:
-            
             detour_route = await fetch_detour_route(
                 origin=geocoder_output.origin.coordinates,
                 destination=geocoder_output.destination.coordinates,
