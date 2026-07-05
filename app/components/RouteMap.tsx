@@ -73,13 +73,13 @@ export default function RouteMap({ finalRoute, alternativeRoutes = [] }: RouteMa
             allCoords.push(...detourCoords)
             L.polyline(
               detourCoords.map(c => [c.lat, c.lng]),
-              { color: '#F59E0B', weight: 6, opacity: 0.9, lineCap: 'round', lineJoin: 'round' }
+              { color: '#F59E0B', weight: 7, opacity: 1, lineCap: 'round', lineJoin: 'round' }
             ).addTo(map)
             detourCoords.forEach(c => bounds.extend([c.lat, c.lng]))
           }
         }
 
-        // Add marker for waypoint
+        // Add prominent marker for waypoint
         if (finalRoute.waypoint) {
           // Try to find waypoint location from the detour route end
           const detourCoords: LatLng[] = []
@@ -95,16 +95,29 @@ export default function RouteMap({ finalRoute, alternativeRoutes = [] }: RouteMa
 
           if (detourCoords.length > 0) {
             const lastCoord = detourCoords[detourCoords.length - 1]
+            // Create a larger, more visible circle marker
             L.circleMarker([lastCoord.lat, lastCoord.lng], {
-              radius: 8,
+              radius: 15,
               fillColor: '#EF4444',
-              color: '#991B1B',
-              weight: 2,
+              color: '#DC2626',
+              weight: 4,
               opacity: 1,
-              fillOpacity: 0.8,
+              fillOpacity: 0.95,
             })
-              .bindPopup(finalRoute.waypoint.name)
+              .bindPopup(`<b>${finalRoute.waypoint.name}</b>`, { closeButton: true })
+              .openPopup()
               .addTo(map)
+            
+            // Also add a pulsing ring effect by adding another circle behind it
+            L.circleMarker([lastCoord.lat, lastCoord.lng], {
+              radius: 20,
+              fillColor: 'transparent',
+              color: '#EF4444',
+              weight: 2,
+              opacity: 0.5,
+              fillOpacity: 0,
+            }).addTo(map)
+            
             bounds.extend([lastCoord.lat, lastCoord.lng])
           }
         }
