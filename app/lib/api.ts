@@ -40,7 +40,7 @@ export interface LocationCoords {
 }
 
 const API_ENDPOINT = 'https://studied-hacker-lucrative.ngrok-free.dev/plan_route'
-const API_TIMEOUT = 120000 // 120 seconds
+const API_TIMEOUT = 240000 // 240 seconds
 
 export async function planRoute(
   userInput: string,
