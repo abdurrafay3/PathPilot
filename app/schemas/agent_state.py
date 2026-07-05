@@ -69,6 +69,10 @@ class RequiredStop(BaseModel):
 class CandidateRoute(BaseModel):
     # route id, summary, duration_minutes, distance_metres, walking_minutes, transfers, polyline
     route_id: str = Field(description="The unique identifier for the route candidate.")
+    travel_mode: str | None = Field(
+        default=None,
+        description="The travel mode used for this route or transit detour leg.",
+    )
     duration_minutes: int = Field(
         description="The estimated duration of the route candidate in minutes."
     )

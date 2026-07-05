@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from app.agents.geocoder import get_region_context
 from app.agents.intent_normalizer import normalize_intent
@@ -11,12 +12,15 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(name)s | %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s | %(levelname)s | %(name)s | %(message)s"
+)
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
 logging.getLogger("httpcore").setLevel(logging.WARNING)
 
 logging.getLogger("openai").setLevel(logging.WARNING)
+
 
 class PlanRouteRequest(BaseModel):
     user_input: str
@@ -24,6 +28,14 @@ class PlanRouteRequest(BaseModel):
 
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # okay for demo/dev
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 @app.get("/")
 def health_check() -> dict:

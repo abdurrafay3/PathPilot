@@ -48,7 +48,7 @@ async def search_nearest_waypoints(coordinates: tuple, waypoint_type: str) -> li
         "locationRestriction": {
             "circle": {
                 "center": {"latitude": coordinates[0], "longitude": coordinates[1]},
-                "radius": 1000.0,
+                "radius": 300.0,
             }
         },
     }

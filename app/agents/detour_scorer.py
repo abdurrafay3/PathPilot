@@ -75,6 +75,7 @@ async def fetch_route(origin : Coordinates, destination : Coordinates, intent_ou
             polyline = route.get("polyline", {}).get("encodedPolyline", None)
             result = CandidateRoute(
                 route_id=f"route_{origin.lat}_{origin.lng}_to_{destination.lat}_{destination.lng}",
+                travel_mode=intent_output.travel_mode,
                 duration_minutes=duration_minutes,
                 distance_metres=distances_meters,
                 polyline=polyline
@@ -284,6 +285,7 @@ async def score_detours(candidate_route_output : CandidateRouteAgentOutput, wayp
             logger.warning(f"Base route with ID {route.route_id} not found in candidate routes. Skipping scoring for this route.")
             continue  
         for waypoint_candidate in route.candidates:
+            
             detour_route = await fetch_detour_route(
                 origin=geocoder_output.origin.coordinates,
                 destination=geocoder_output.destination.coordinates,
@@ -311,4 +313,3 @@ async def score_detours(candidate_route_output : CandidateRouteAgentOutput, wayp
 
 
             
-

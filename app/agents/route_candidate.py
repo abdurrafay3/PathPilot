@@ -47,6 +47,8 @@ async def fetch_candidate_routes(geocoder_result : GeocoderAgentOutput, intent_o
            "X-Goog-FieldMask": "routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline"
        }
 
+       route_travel_mode = intent_output.travel_mode.upper() if intent_output.travel_mode else "DRIVE"
+
        body = {
             "origin" : {
                 "location" : {
@@ -64,7 +66,7 @@ async def fetch_candidate_routes(geocoder_result : GeocoderAgentOutput, intent_o
                     }
                 }
             },
-            "travelMode" : intent_output.travel_mode.upper() if intent_output.travel_mode else "DRIVE",
+            "travelMode" : route_travel_mode,
             "computeAlternativeRoutes" : True,
             "routeModifiers" : intent_output.routeModifiers.model_dump(),
        }
@@ -82,6 +84,7 @@ async def fetch_candidate_routes(geocoder_result : GeocoderAgentOutput, intent_o
         polyline = route.get("polyline", {}).get("encodedPolyline", None)
         candidates_route = CandidateRoute(
             route_id=route_id,
+            travel_mode=route_travel_mode,
             duration_minutes=duration_minutes,
             distance_metres=distance_metres,
             polyline=polyline
@@ -107,6 +110,5 @@ async def fetch_candidate_routes(geocoder_result : GeocoderAgentOutput, intent_o
 
 
     
-
 
 

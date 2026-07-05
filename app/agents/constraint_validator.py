@@ -43,6 +43,7 @@ async def validate_constraints(detour_routes : DetourScorerOutput) -> Constraint
     accepted_routes.sort(key=lambda x: x.score, reverse=True)
     final_route = accepted_routes[0] if accepted_routes else None
     status = "valid_route_found" if final_route else "no_valid_route_found"
+    logger.info(f"{color.BRIGHT_MAGENTA}{color.BOLD}Constraint Validation completed. Status: {status}{color.RESET}")
     return ConstraintValidatorAgentOutput(
         accepted_routes=accepted_routes,
         final_route=final_route,
