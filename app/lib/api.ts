@@ -1,12 +1,12 @@
 export interface Waypoint {
   name: string
-  place_type: string
-  detour_minutes: number
-  score: number
-  base_route_duration: number
-  base_route_distance: number
-  rating: number
-  open_now: boolean
+  place_type?: string
+  detour_minutes?: number
+  score?: number
+  base_route_duration?: number
+  base_route_distance?: number
+  rating?: number
+  open_now?: boolean
 }
 
 export interface RoutePolylines {
