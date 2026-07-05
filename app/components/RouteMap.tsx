@@ -38,20 +38,20 @@ export default function RouteMap({ finalRoute, alternativeRoutes = [] }: RouteMa
         const allCoords: LatLng[] = []
         const bounds = L.latLngBounds([])
 
-        // Decode and draw base route (gray)
+        // Decode and draw base route (bright blue) - origin to destination
         if (finalRoute.base_route?.polyline) {
           const baseCoords = decodePolyline(finalRoute.base_route.polyline)
           if (baseCoords.length > 0) {
             allCoords.push(...baseCoords)
             L.polyline(
               baseCoords.map(c => [c.lat, c.lng]),
-              { color: '#9CA3AF', weight: 4, opacity: 0.6 }
+              { color: '#0EA5E9', weight: 6, opacity: 0.9, lineCap: 'round', lineJoin: 'round' }
             ).addTo(map)
             baseCoords.forEach(c => bounds.extend([c.lat, c.lng]))
           }
         }
 
-        // Decode and draw detour route (blue)
+        // Decode and draw detour route (bright orange) - to the waypoint
         if (finalRoute.detour_route) {
           const detourCoords: LatLng[] = []
           
@@ -73,7 +73,7 @@ export default function RouteMap({ finalRoute, alternativeRoutes = [] }: RouteMa
             allCoords.push(...detourCoords)
             L.polyline(
               detourCoords.map(c => [c.lat, c.lng]),
-              { color: '#3B82F6', weight: 3, opacity: 0.8 }
+              { color: '#F59E0B', weight: 6, opacity: 0.9, lineCap: 'round', lineJoin: 'round' }
             ).addTo(map)
             detourCoords.forEach(c => bounds.extend([c.lat, c.lng]))
           }
@@ -125,10 +125,10 @@ export default function RouteMap({ finalRoute, alternativeRoutes = [] }: RouteMa
             }
 
             if (altCoords.length > 0) {
-              const colors = ['#10B981', '#8B5CF6', '#F59E0B']
+              const colors = ['#10B981', '#8B5CF6', '#EF4444']
               L.polyline(
                 altCoords.map(c => [c.lat, c.lng]),
-                { color: colors[idx] || '#CCCCCC', weight: 2, opacity: 0.4 }
+                { color: colors[idx] || '#CCCCCC', weight: 5, opacity: 0.65, lineCap: 'round', lineJoin: 'round' }
               ).addTo(map)
               altCoords.forEach(c => bounds.extend([c.lat, c.lng]))
             }
