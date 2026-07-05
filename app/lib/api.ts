@@ -13,6 +13,7 @@ export interface RoutePolylines {
   polyline: string
   legs?: Array<{
     polyline: string
+    travel_mode?: string
   }>
 }
 
