@@ -1,0 +1,30 @@
+kind = "web"
+previewPath = "/"
+title = "Path Pilot"
+version = "1.0.0"
+id = "artifacts/path-pilot"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/", "/api" ]
+localPort = 25451
+
+[services.development]
+run = "pnpm -w run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/path-pilot", "run", "build" ]
+publicDir = "artifacts/path-pilot/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25451"
