@@ -234,8 +234,9 @@ class DetourScore(BaseModel):
     base_route: CandidateRoute = Field(
         description="The base route against which the detour score is calculated."
     )
-    waypoint: WayPointCandidate = Field(
-        description="The waypoint for which the detour score is calculated."
+    waypoint: WayPointCandidate | None = Field(
+        default=None,
+        description="The waypoint for which the detour score is calculated, if any. None when the route has no required stops.",
     )
     waypoints: list[WayPointCandidate] = Field(
         default_factory=list,
