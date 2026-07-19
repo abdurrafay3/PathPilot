@@ -2,7 +2,7 @@
 
 ## How to run this:
 
-Step 1: clone this repo 
+Step 1: clone the `backup_working_version` branch. The final version of the app is in that branch
 Step 2: run the backend server locally using uvicorn app.main:app --reload from the project root directory
 Step 3: run the frontend by first going into the frontend subfolder, then run `pnpm install` and then `pnpm dev`
 
