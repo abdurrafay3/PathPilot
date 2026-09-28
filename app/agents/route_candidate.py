@@ -3,8 +3,9 @@ from agents import function_tool, RunContextWrapper
 from app.schemas.agent_state import CandidateRoute, GeocoderAgentOutput, CandidateRouteAgentOutput, IntentOutput, RoutePlannerContext
 from app.config import settings
 import httpx
-
 import logging
+from app.timing import timed
+from app.mock.helper import record_fixture, load_fixture, MOCK, fake_latency
 
 logger = logging.getLogger(__name__)
 
@@ -40,38 +41,44 @@ async def fetch_candidate_routes(geocoder_result : GeocoderAgentOutput, intent_o
     """
 
     route_modifiers = intent_output.routeModifiers
-    async with httpx.AsyncClient(timeout=30.0) as client:
-       headers = {
-           "Content-Type": "application/json",
-           "X-Goog-Api-Key": settings.GOOGLE_MAPS_API_KEY,
-           "X-Goog-FieldMask": "routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline"
-       }
-
-       body = {
-            "origin" : {
-                "location" : {
-                    "latLng" : {
-                        "latitude" : geocoder_result.origin.coordinates.lat,
-                        "longitude" : geocoder_result.origin.coordinates.lng
-                    }
+    headers = {
+            "Content-Type": "application/json",
+            "X-Goog-Api-Key": settings.GOOGLE_MAPS_API_KEY,
+            "X-Goog-FieldMask": "routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline"
+        }
+    body = {
+        "origin" : {
+            "location" : {
+                "latLng" : {
+                    "latitude" : geocoder_result.origin.coordinates.lat,
+                    "longitude" : geocoder_result.origin.coordinates.lng
                 }
-            },
-            "destination" : {
-                "location" : {
-                    "latLng" : {
-                        "latitude" : geocoder_result.destination.coordinates.lat,
-                        "longitude" : geocoder_result.destination.coordinates.lng
-                    }
+            }
+        },
+        "destination" : {
+            "location" : {
+                "latLng" : {
+                    "latitude" : geocoder_result.destination.coordinates.lat,
+                    "longitude" : geocoder_result.destination.coordinates.lng
                 }
-            },
-            "travelMode" : intent_output.travel_mode.upper() if intent_output.travel_mode else "DRIVE",
-            "computeAlternativeRoutes" : True,
-            "routeModifiers" : intent_output.routeModifiers.model_dump(),
-       }
+            }
+        },
+        "travelMode" : intent_output.travel_mode.upper() if intent_output.travel_mode else "DRIVE",
+        "computeAlternativeRoutes" : True,
+        "routeModifiers" : intent_output.routeModifiers.model_dump(),
+    }
 
-       response = await client.post(GOOGLE_ROUTES_URL, headers=headers, json=body)
-       response.raise_for_status()
-       data = response.json()
+    if MOCK:
+        data = load_fixture("routes_candidate")
+        await fake_latency(0.3195, 0.39425)
+    else:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            with timed("route_candidate.fetch_candidate_routes", "routes_compute", "google") as t:
+                response = await client.post(GOOGLE_ROUTES_URL, headers=headers, json=body)
+                t["status"] = response.status_code
+        response.raise_for_status()
+        data = response.json()
+        record_fixture("routes_candidate", data)
     candidate_routes = []
     routes = data.get("routes", [])
     for index, route in enumerate(routes):

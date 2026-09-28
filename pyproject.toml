@@ -17,4 +17,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "black>=26.5.1",
+    "locust>=2.46.6",
+    "pandas>=3.0.6",
+    "tabulate>=0.10.0",
 ]

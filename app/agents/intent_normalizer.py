@@ -4,6 +4,8 @@ from agents import Agent, Runner, function_tool
 from app.schemas.agent_state import Coordinates
 from app.agents.geocoder import get_region_context
 import logging
+from app.timing import timed
+from app.mock.helper import record_fixture, load_fixture, MOCK, fake_latency
 
 logger = logging.getLogger(__name__)
 
@@ -53,8 +55,13 @@ Rules:
     user_prompt = f"{user_input}\n\nLatitude: {current_location.lat}, Longitude: {current_location.lng}\nuser address: {user_location}\n\nPlease extract the intent into the provided structured output schema."
 
     intent_normalizer = Agent(name="intent_normalizer", instructions=system_prompt, model="gpt-4o-mini", output_type=IntentOutput)
-    intent_normalizer_runner = await Runner.run(starting_agent=intent_normalizer, input=user_prompt)
-    result = intent_normalizer_runner.final_output
-
-    logger.info(f"\033[31mIntent normalization completed!\033[0m")
-    return result
+    if MOCK:
+        await fake_latency(3.07, 4.48)
+        return IntentOutput.model_validate(load_fixture("intent"))
+    else:
+        with timed("intent_normalizer.normalize_intent", "gpt-4o-mini", "openai"):
+            intent_normalizer_runner = await Runner.run(starting_agent=intent_normalizer, input=user_prompt)
+        result = intent_normalizer_runner.final_output
+        record_fixture("intent", result.model_dump(mode="json"))
+        logger.info(f"\033[31mIntent normalization completed!\033[0m")
+        return result

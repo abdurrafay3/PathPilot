@@ -1,0 +1,751 @@
+{
+  "plus_code": {
+    "compound_code": "87Q7+22 Clear Water Bay, Hong Kong",
+    "global_code": "7PJP87Q7+22"
+  },
+  "results": [
+    {
+      "address_components": [
+        {
+          "long_name": "\u706b\u96de",
+          "short_name": "\u706b\u96de",
+          "types": [
+            "premise"
+          ]
+        },
+        {
+          "long_name": "Clear Water Bay",
+          "short_name": "Clear Water Bay",
+          "types": [
+            "neighborhood",
+            "political"
+          ]
+        },
+        {
+          "long_name": "New Territories",
+          "short_name": "New Territories",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Hong Kong",
+          "short_name": "HK",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "Hong Kong, New Territories, Clear Water Bay, \u706b\u96de",
+      "geometry": {
+        "bounds": {
+          "northeast": {
+            "lat": 22.337518,
+            "lng": 114.2629885
+          },
+          "southwest": {
+            "lat": 22.3374881,
+            "lng": 114.2629516
+          }
+        },
+        "location": {
+          "lat": 22.3375054,
+          "lng": 114.2629702
+        },
+        "location_type": "ROOFTOP",
+        "viewport": {
+          "northeast": {
+            "lat": 22.3388736802915,
+            "lng": 114.2642646302915
+          },
+          "southwest": {
+            "lat": 22.3361757197085,
+            "lng": 114.2615666697085
+          }
+        }
+      },
+      "place_id": "ChIJl89vtWoEBDQRC3WCk7ra34o",
+      "types": [
+        "premise",
+        "street_address"
+      ]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "\u706b\u96de",
+          "short_name": "\u706b\u96de",
+          "types": [
+            "premise"
+          ]
+        },
+        {
+          "long_name": "Clear Water Bay",
+          "short_name": "Clear Water Bay",
+          "types": [
+            "neighborhood",
+            "political"
+          ]
+        },
+        {
+          "long_name": "New Territories",
+          "short_name": "New Territories",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Hong Kong",
+          "short_name": "HK",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "Hong Kong, New Territories, Clear Water Bay, \u706b\u96de",
+      "geometry": {
+        "location": {
+          "lat": 22.3375005,
+          "lng": 114.2629677
+        },
+        "location_type": "ROOFTOP",
+        "viewport": {
+          "northeast": {
+            "lat": 22.3388418302915,
+            "lng": 114.2642475302915
+          },
+          "southwest": {
+            "lat": 22.3361438697085,
+            "lng": 114.2615495697085
+          }
+        }
+      },
+      "place_id": "ChIJbdh6tWoEBDQR6J0cUJZWxFw",
+      "plus_code": {
+        "compound_code": "87Q7+25 Clear Water Bay, Hong Kong",
+        "global_code": "7PJP87Q7+25"
+      },
+      "types": [
+        "establishment",
+        "point_of_interest"
+      ]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "1",
+          "short_name": "1",
+          "types": [
+            "street_number"
+          ]
+        },
+        {
+          "long_name": "University Road",
+          "short_name": "University Rd",
+          "types": [
+            "route"
+          ]
+        },
+        {
+          "long_name": "Clear Water Bay",
+          "short_name": "Clear Water Bay",
+          "types": [
+            "neighborhood",
+            "political"
+          ]
+        },
+        {
+          "long_name": "New Territories",
+          "short_name": "New Territories",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Hong Kong",
+          "short_name": "HK",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "1 University Rd, Clear Water Bay, New Territories, Hong Kong",
+      "geometry": {
+        "location": {
+          "lat": 22.3366322,
+          "lng": 114.2633748
+        },
+        "location_type": "ROOFTOP",
+        "viewport": {
+          "northeast": {
+            "lat": 22.3380780802915,
+            "lng": 114.2646447302915
+          },
+          "southwest": {
+            "lat": 22.3353801197085,
+            "lng": 114.2619467697085
+          }
+        }
+      },
+      "place_id": "ChIJExrL0WoEBDQRA7qv7rLuTFE",
+      "types": [
+        "street_address",
+        "subpremise"
+      ]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "Hong Kong University of Science and Technology",
+          "short_name": "Hong Kong University of Science and Technology",
+          "types": [
+            "establishment",
+            "point_of_interest",
+            "transit_station"
+          ]
+        },
+        {
+          "long_name": "Clear Water Bay",
+          "short_name": "Clear Water Bay",
+          "types": [
+            "neighborhood",
+            "political"
+          ]
+        },
+        {
+          "long_name": "New Territories",
+          "short_name": "New Territories",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Hong Kong",
+          "short_name": "HK",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "Hong Kong University of Science and Technology, Clear Water Bay, New Territories, Hong Kong",
+      "geometry": {
+        "location": {
+          "lat": 22.33855,
+          "lng": 114.26206
+        },
+        "location_type": "GEOMETRIC_CENTER",
+        "viewport": {
+          "northeast": {
+            "lat": 22.3398991302915,
+            "lng": 114.2634091302915
+          },
+          "southwest": {
+            "lat": 22.3372011697085,
+            "lng": 114.2607111697085
+          }
+        }
+      },
+      "place_id": "ChIJwQZ0WhUEBDQRhHMVZfjpats",
+      "plus_code": {
+        "compound_code": "87Q6+CR Clear Water Bay, Hong Kong",
+        "global_code": "7PJP87Q6+CR"
+      },
+      "types": [
+        "establishment",
+        "point_of_interest",
+        "transit_station"
+      ]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "87Q7+22",
+          "short_name": "87Q7+22",
+          "types": [
+            "plus_code"
+          ]
+        },
+        {
+          "long_name": "Clear Water Bay",
+          "short_name": "Clear Water Bay",
+          "types": [
+            "neighborhood",
+            "political"
+          ]
+        },
+        {
+          "long_name": "New Territories",
+          "short_name": "New Territories",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Hong Kong",
+          "short_name": "HK",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "87Q7+22 Clear Water Bay, Hong Kong",
+      "geometry": {
+        "bounds": {
+          "northeast": {
+            "lat": 22.337625,
+            "lng": 114.262625
+          },
+          "southwest": {
+            "lat": 22.3375,
+            "lng": 114.2625
+          }
+        },
+        "location": {
+          "lat": 22.3375,
+          "lng": 114.2626
+        },
+        "location_type": "GEOMETRIC_CENTER",
+        "viewport": {
+          "northeast": {
+            "lat": 22.3389114802915,
+            "lng": 114.2639114802915
+          },
+          "southwest": {
+            "lat": 22.3362135197085,
+            "lng": 114.2612135197085
+          }
+        }
+      },
+      "place_id": "Egs3UEpQODdRNysyMiImOiQKCg2YblANFdAWG0QQChoUChIJd3-pJPMDBDQR3LaBS8yOSE0",
+      "plus_code": {
+        "compound_code": "87Q7+22 Clear Water Bay, Hong Kong",
+        "global_code": "7PJP87Q7+22"
+      },
+      "types": [
+        "plus_code"
+      ]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "1",
+          "short_name": "1",
+          "types": [
+            "street_number"
+          ]
+        },
+        {
+          "long_name": "University Road",
+          "short_name": "University Rd",
+          "types": [
+            "route"
+          ]
+        },
+        {
+          "long_name": "Clear Water Bay",
+          "short_name": "Clear Water Bay",
+          "types": [
+            "neighborhood",
+            "political"
+          ]
+        },
+        {
+          "long_name": "New Territories",
+          "short_name": "New Territories",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Hong Kong",
+          "short_name": "HK",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "1 University Rd, Clear Water Bay, New Territories, Hong Kong",
+      "geometry": {
+        "bounds": {
+          "northeast": {
+            "lat": 22.3385883,
+            "lng": 114.2628306
+          },
+          "southwest": {
+            "lat": 22.337524,
+            "lng": 114.2622723
+          }
+        },
+        "location": {
+          "lat": 22.33803605582073,
+          "lng": 114.2625176130343
+        },
+        "location_type": "GEOMETRIC_CENTER",
+        "viewport": {
+          "northeast": {
+            "lat": 22.3394051302915,
+            "lng": 114.2639004302915
+          },
+          "southwest": {
+            "lat": 22.3367071697085,
+            "lng": 114.2612024697085
+          }
+        }
+      },
+      "place_id": "ChIJGz-2TRUEBDQRuhw_rfaa2ZQ",
+      "types": [
+        "route"
+      ]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "1",
+          "short_name": "1",
+          "types": [
+            "street_number"
+          ]
+        },
+        {
+          "long_name": "University Road",
+          "short_name": "University Rd",
+          "types": [
+            "route"
+          ]
+        },
+        {
+          "long_name": "Clear Water Bay",
+          "short_name": "Clear Water Bay",
+          "types": [
+            "neighborhood",
+            "political"
+          ]
+        },
+        {
+          "long_name": "New Territories",
+          "short_name": "New Territories",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Hong Kong",
+          "short_name": "HK",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "1 University Rd, Clear Water Bay, New Territories, Hong Kong",
+      "geometry": {
+        "location": {
+          "lat": 22.3385882,
+          "lng": 114.2622724
+        },
+        "location_type": "RANGE_INTERPOLATED",
+        "viewport": {
+          "northeast": {
+            "lat": 22.3399371802915,
+            "lng": 114.2636213802915
+          },
+          "southwest": {
+            "lat": 22.3372392197085,
+            "lng": 114.2609234197085
+          }
+        }
+      },
+      "place_id": "EjwxIFVuaXZlcnNpdHkgUmQsIENsZWFyIFdhdGVyIEJheSwgTmV3IFRlcnJpdG9yaWVzLCBIb25nIEtvbmciGhIYChQKEgkbP7ZNFQQENBG6HD-t9prZlBAB",
+      "types": [
+        "street_address"
+      ]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "Clear Water Bay",
+          "short_name": "Clear Water Bay",
+          "types": [
+            "neighborhood",
+            "political"
+          ]
+        },
+        {
+          "long_name": "New Territories",
+          "short_name": "New Territories",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Hong Kong",
+          "short_name": "HK",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "Clear Water Bay, New Territories, Hong Kong",
+      "geometry": {
+        "bounds": {
+          "northeast": {
+            "lat": 22.357655,
+            "lng": 114.3122371
+          },
+          "southwest": {
+            "lat": 22.260458,
+            "lng": 114.211208
+          }
+        },
+        "location": {
+          "lat": 22.3207164,
+          "lng": 114.2713158
+        },
+        "location_type": "APPROXIMATE",
+        "viewport": {
+          "northeast": {
+            "lat": 22.357655,
+            "lng": 114.3122371
+          },
+          "southwest": {
+            "lat": 22.260458,
+            "lng": 114.211208
+          }
+        }
+      },
+      "place_id": "ChIJd3-pJPMDBDQR3LaBS8yOSE0",
+      "types": [
+        "neighborhood",
+        "political"
+      ]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "Sai Kung District",
+          "short_name": "Sai Kung District",
+          "types": [
+            "administrative_area_level_2",
+            "political"
+          ]
+        },
+        {
+          "long_name": "New Territories",
+          "short_name": "New Territories",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Hong Kong",
+          "short_name": "HK",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "Sai Kung District, New Territories, Hong Kong",
+      "geometry": {
+        "bounds": {
+          "northeast": {
+            "lat": 22.480709,
+            "lng": 114.405739
+          },
+          "southwest": {
+            "lat": 22.253151,
+            "lng": 114.211208
+          }
+        },
+        "location": {
+          "lat": 22.3833893,
+          "lng": 114.270976
+        },
+        "location_type": "APPROXIMATE",
+        "viewport": {
+          "northeast": {
+            "lat": 22.480709,
+            "lng": 114.405739
+          },
+          "southwest": {
+            "lat": 22.253151,
+            "lng": 114.211208
+          }
+        }
+      },
+      "place_id": "ChIJQclRg-kDBDQRrJN5xy1JqWM",
+      "types": [
+        "administrative_area_level_2",
+        "political"
+      ]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "New Territories",
+          "short_name": "New Territories",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Hong Kong",
+          "short_name": "HK",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "New Territories, Hong Kong",
+      "geometry": {
+        "bounds": {
+          "northeast": {
+            "lat": 22.5619485,
+            "lng": 114.441442
+          },
+          "southwest": {
+            "lat": 22.153415,
+            "lng": 113.835078
+          }
+        },
+        "location": {
+          "lat": 22.3704243,
+          "lng": 114.1234149
+        },
+        "location_type": "APPROXIMATE",
+        "viewport": {
+          "northeast": {
+            "lat": 22.5619485,
+            "lng": 114.441442
+          },
+          "southwest": {
+            "lat": 22.153415,
+            "lng": 113.835078
+          }
+        }
+      },
+      "place_id": "ChIJt8ZyJegABDQRyJEH8bJo_iI",
+      "types": [
+        "administrative_area_level_1",
+        "political"
+      ]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "Hong Kong",
+          "short_name": "Hong Kong",
+          "types": [
+            "locality",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Hong Kong",
+          "short_name": "HK",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "Hong Kong",
+      "geometry": {
+        "bounds": {
+          "northeast": {
+            "lat": 22.5619475,
+            "lng": 114.4294999
+          },
+          "southwest": {
+            "lat": 22.1435,
+            "lng": 113.8259001
+          }
+        },
+        "location": {
+          "lat": 22.3193292,
+          "lng": 114.1694229
+        },
+        "location_type": "APPROXIMATE",
+        "viewport": {
+          "northeast": {
+            "lat": 22.5619475,
+            "lng": 114.4294999
+          },
+          "southwest": {
+            "lat": 22.1435,
+            "lng": 113.8259001
+          }
+        }
+      },
+      "place_id": "ChIJByjqov3-AzQR2pT0dDW0bUg",
+      "types": [
+        "locality",
+        "political"
+      ]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "Hong Kong",
+          "short_name": "HK",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "Hong Kong",
+      "geometry": {
+        "bounds": {
+          "northeast": {
+            "lat": 22.5619485,
+            "lng": 114.4528999
+          },
+          "southwest": {
+            "lat": 22.1435,
+            "lng": 113.8259001
+          }
+        },
+        "location": {
+          "lat": 22.3193039,
+          "lng": 114.1693611
+        },
+        "location_type": "APPROXIMATE",
+        "viewport": {
+          "northeast": {
+            "lat": 22.5619485,
+            "lng": 114.4528999
+          },
+          "southwest": {
+            "lat": 22.1435,
+            "lng": 113.8259001
+          }
+        }
+      },
+      "place_id": "ChIJD5gyo-3iAzQRfMnq27qzivA",
+      "types": [
+        "country",
+        "political"
+      ]
+    }
+  ],
+  "status": "OK"
+}

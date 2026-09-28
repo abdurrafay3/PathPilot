@@ -1,0 +1,8 @@
+.venv
+.env
+node_modules
+frontend
+.git
+__pycache__
+*.csv
+app/loadtest

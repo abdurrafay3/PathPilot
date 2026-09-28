@@ -1,0 +1,106 @@
+{
+  "places": [
+    {
+      "id": "ChIJv7tESwAFBDQRPbyANxk3IAo",
+      "types": [
+        "convenience_store",
+        "food_store",
+        "store",
+        "food",
+        "point_of_interest",
+        "establishment"
+      ],
+      "formattedAddress": "Clear Water Bay Rd, Clear Water Bay, New Territories, Hong Kong",
+      "location": {
+        "latitude": 22.337982999999998,
+        "longitude": 114.26396299999999
+      },
+      "rating": 1,
+      "userRatingCount": 2,
+      "displayName": {
+        "text": "7-Eleven",
+        "languageCode": "en"
+      }
+    },
+    {
+      "id": "ChIJmUcw9moEBDQR4Q3Ba_ayAJs",
+      "types": [
+        "convenience_store",
+        "food_store",
+        "store",
+        "food",
+        "point_of_interest",
+        "establishment"
+      ],
+      "formattedAddress": "\u6e05\u6c34\u7063\u5927\u5b78\u90531\u865f\u9999\u6e2f\u79d1\u6280\u5927\u5b78\u5b78\u8853\u5927\u6a13LG5 \u6a13\u5c64LG5302 & LG5302A\u865f\u8217, Clear Water Bay, New Territories, Hong Kong",
+      "location": {
+        "latitude": 22.3365407,
+        "longitude": 114.26574439999999
+      },
+      "displayName": {
+        "text": "7-11\u4fbf\u5229\u5e97 \u9999\u6e2f\u79d1\u6280\u5927\u5b78\u5e97",
+        "languageCode": "yue"
+      }
+    },
+    {
+      "id": "ChIJL2SdrxUEBDQRTWyKfLbiTnU",
+      "types": [
+        "convenience_store",
+        "food_store",
+        "store",
+        "food",
+        "point_of_interest",
+        "establishment"
+      ],
+      "formattedAddress": "G/F 1 Tai Po Tsai Village, Clear Water Bay Rd, Clear Water Bay, New Territories, Hong Kong",
+      "location": {
+        "latitude": 22.3372471,
+        "longitude": 114.2592495
+      },
+      "rating": 4.7,
+      "userRatingCount": 20,
+      "displayName": {
+        "text": "7-Eleven",
+        "languageCode": "en"
+      },
+      "currentOpeningHours": {
+        "openNow": true,
+        "periods": [
+          {
+            "open": {
+              "day": 1,
+              "hour": 0,
+              "minute": 0,
+              "truncated": true,
+              "date": {
+                "year": 2026,
+                "month": 9,
+                "day": 28
+              }
+            },
+            "close": {
+              "day": 0,
+              "hour": 23,
+              "minute": 59,
+              "truncated": true,
+              "date": {
+                "year": 2026,
+                "month": 10,
+                "day": 4
+              }
+            }
+          }
+        ],
+        "weekdayDescriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "cleaned_prompt": "Take me to Sunny House with a 711 on the way",
+  "origin": {
+    "location_type": "explicit_location",
+    "value": "Hong Kong, New Territories, Clear Water Bay, \u706b\u96de",
+    "confidence": 1.0,
+    "coordinates": {
+      "lat": 22.3375,
+      "lng": 114.2626
+    }
+  },
+  "destination": {
+    "location_type": "explicit_location",
+    "value": "Sunny House",
+    "confidence": 1.0,
+    "coordinates": null
+  },
+  "travel_mode": "DRIVE",
+  "required_stops": [
+    {
+      "place_type": [
+        "convenience_store"
+      ],
+      "position": "along_route",
+      "constraint_type": "hard",
+      "max_detour_minutes": 12,
+      "open_now": null
+    }
+  ],
+  "max_walking_minutes": 10,
+  "optimization_goal": "fastest_valid_route",
+  "assumptions": [
+    "User's current location inferred from provided coordinates.",
+    "Default travel mode set to DRIVE.",
+    "Destination inferred as Sunny House.",
+    "Required stop is set to 711 as a convenience store along the route."
+  ],
+  "status": "ready_for_geocoding",
+  "routeModifiers": {
+    "avoidTolls": false,
+    "avoidHighways": false,
+    "avoidFerries": false
+  }
+}

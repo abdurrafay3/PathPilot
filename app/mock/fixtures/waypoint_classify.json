@@ -1,0 +1,210 @@
+{
+  "route_waypoints": [
+    {
+      "route_id": "route_1",
+      "candidates": [
+        {
+          "name": "7-Eleven",
+          "place_type": "convenience_store",
+          "coordinates": {
+            "lat": 22.337982999999998,
+            "lng": 114.26396299999999
+          },
+          "near_route_id": "route_1",
+          "distance_from_route_metres": 136.70353180038487,
+          "rating": 1.0,
+          "open_now": null,
+          "required_stop_index": 0,
+          "route_sample_index": 0
+        },
+        {
+          "name": "7-11\u4fbf\u5229\u5e97 \u9999\u6e2f\u79d1\u6280\u5927\u5b78\u5e97",
+          "place_type": "convenience_store",
+          "coordinates": {
+            "lat": 22.3365407,
+            "lng": 114.26574439999999
+          },
+          "near_route_id": "route_1",
+          "distance_from_route_metres": 334.5424570440293,
+          "rating": null,
+          "open_now": null,
+          "required_stop_index": 0,
+          "route_sample_index": 0
+        },
+        {
+          "name": "7-Eleven",
+          "place_type": "convenience_store",
+          "coordinates": {
+            "lat": 22.3372471,
+            "lng": 114.2592495
+          },
+          "near_route_id": "route_1",
+          "distance_from_route_metres": 357.0504059350308,
+          "rating": 4.7,
+          "open_now": true,
+          "required_stop_index": 0,
+          "route_sample_index": 0
+        },
+        {
+          "name": "7-11",
+          "place_type": "convenience_store",
+          "coordinates": {
+            "lat": 22.332531,
+            "lng": 114.221898
+          },
+          "near_route_id": "route_1",
+          "distance_from_route_metres": 152.55920584053385,
+          "rating": 3.3,
+          "open_now": true,
+          "required_stop_index": 0,
+          "route_sample_index": 3
+        },
+        {
+          "name": "7-11 \u725b\u982d\u89d2\u5fb7\u5bf6\u82b1\u5712",
+          "place_type": "convenience_store",
+          "coordinates": {
+            "lat": 22.3266633,
+            "lng": 114.2149596
+          },
+          "near_route_id": "route_1",
+          "distance_from_route_metres": 171.15961851625804,
+          "rating": null,
+          "open_now": null,
+          "required_stop_index": 0,
+          "route_sample_index": 4
+        },
+        {
+          "name": "7-Eleven",
+          "place_type": "convenience_store",
+          "coordinates": {
+            "lat": 22.3258051,
+            "lng": 114.21491759999999
+          },
+          "near_route_id": "route_1",
+          "distance_from_route_metres": 220.05612490079577,
+          "rating": 3.0,
+          "open_now": true,
+          "required_stop_index": 0,
+          "route_sample_index": 4
+        },
+        {
+          "name": "759 Store (Ping Shek Estate)",
+          "place_type": "convenience_store",
+          "coordinates": {
+            "lat": 22.3335035,
+            "lng": 114.2092004
+          },
+          "near_route_id": "route_1",
+          "distance_from_route_metres": 87.67734163880799,
+          "rating": 2.4,
+          "open_now": false,
+          "required_stop_index": 0,
+          "route_sample_index": 4
+        }
+      ]
+    },
+    {
+      "route_id": "route_2",
+      "candidates": [
+        {
+          "name": "7-Eleven",
+          "place_type": "convenience_store",
+          "coordinates": {
+            "lat": 22.337982999999998,
+            "lng": 114.26396299999999
+          },
+          "near_route_id": "route_2",
+          "distance_from_route_metres": 136.70353180038487,
+          "rating": 1.0,
+          "open_now": null,
+          "required_stop_index": 0,
+          "route_sample_index": 0
+        },
+        {
+          "name": "7-11\u4fbf\u5229\u5e97 \u9999\u6e2f\u79d1\u6280\u5927\u5b78\u5e97",
+          "place_type": "convenience_store",
+          "coordinates": {
+            "lat": 22.3365407,
+            "lng": 114.26574439999999
+          },
+          "near_route_id": "route_2",
+          "distance_from_route_metres": 334.5424570440293,
+          "rating": null,
+          "open_now": null,
+          "required_stop_index": 0,
+          "route_sample_index": 0
+        },
+        {
+          "name": "7-Eleven",
+          "place_type": "convenience_store",
+          "coordinates": {
+            "lat": 22.3372471,
+            "lng": 114.2592495
+          },
+          "near_route_id": "route_2",
+          "distance_from_route_metres": 357.0504059350308,
+          "rating": 4.7,
+          "open_now": true,
+          "required_stop_index": 0,
+          "route_sample_index": 0
+        },
+        {
+          "name": "7-11",
+          "place_type": "convenience_store",
+          "coordinates": {
+            "lat": 22.332531,
+            "lng": 114.221898
+          },
+          "near_route_id": "route_2",
+          "distance_from_route_metres": 353.5079793641062,
+          "rating": 3.3,
+          "open_now": true,
+          "required_stop_index": 0,
+          "route_sample_index": 2
+        },
+        {
+          "name": "Circle K (Choi Hung MTR Station)",
+          "place_type": "convenience_store",
+          "coordinates": {
+            "lat": 22.334363,
+            "lng": 114.209347
+          },
+          "near_route_id": "route_2",
+          "distance_from_route_metres": 31.7119333903097,
+          "rating": 2.0,
+          "open_now": true,
+          "required_stop_index": 0,
+          "route_sample_index": 4
+        },
+        {
+          "name": "7-11 \u725b\u982d\u89d2\u5fb7\u5bf6\u82b1\u5712",
+          "place_type": "convenience_store",
+          "coordinates": {
+            "lat": 22.3266633,
+            "lng": 114.2149596
+          },
+          "near_route_id": "route_2",
+          "distance_from_route_metres": 171.15961851625804,
+          "rating": null,
+          "open_now": null,
+          "required_stop_index": 0,
+          "route_sample_index": 4
+        },
+        {
+          "name": "7-Eleven",
+          "place_type": "convenience_store",
+          "coordinates": {
+            "lat": 22.3258051,
+            "lng": 114.21491759999999
+          },
+          "near_route_id": "route_2",
+          "distance_from_route_metres": 220.05612490079577,
+          "rating": 3.0,
+          "open_now": true,
+          "required_stop_index": 0,
+          "route_sample_index": 4
+        }
+      ]
+    }
+  ]
+}

@@ -12,9 +12,12 @@ from app.schemas.agent_state import (
 )
 import polyline
 import logging
+from app.timing import timed
+from app.mock.helper import record_fixture
 from agents import Agent, RunContextWrapper, Runner, function_tool
 from app.config import settings
 from math import radians, cos, sin, asin, sqrt
+from app.mock.helper import MOCK, fake_latency, load_fixture
 
 logger = logging.getLogger(__name__)
 
@@ -52,15 +55,22 @@ async def search_nearest_waypoints(coordinates: tuple, waypoint_type: str) -> li
             }
         },
     }
-
+    
     try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            response = await client.post(
-                GOOGLE_NEARBY_PLACES_URL, headers=headers, json=body
-            )
-            response.raise_for_status()
-            data = response.json()
-            return data.get("places", [])
+        if MOCK:
+            data = load_fixture("places_nearby")
+            await fake_latency(0.37, 0.57)
+        else:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                with timed("waypoint_finder.search_nearest_waypoints", "places_nearby", "google") as t:
+                    response = await client.post(
+                        GOOGLE_NEARBY_PLACES_URL, headers=headers, json=body
+                    )
+                    t["status"] = response.status_code
+                response.raise_for_status()
+                data = response.json()
+        record_fixture("places_nearby", data)
+        return data.get("places", [])
     except httpx.RequestError as e:
         logger.error(
             f"\033[91mAn error occurred while requesting the Google Nearby Places API: {e}, Error: {e.response.text}\033[0m"
@@ -295,9 +305,16 @@ async def classify_waypoint_candidates(
 
     user_prompt = f"User's intent: \n\n {intent_output.model_dump_json(indent=2)}\n\n Waypoint candidates: \n\n {waypoint_candidates.model_dump_json(indent=2)}\n\n Please classify the waypoint candidates based on the user's required stops and return the filtered output in the same schema."
 
-    response = await Runner.run(validator_agent, input=user_prompt, max_turns=1)
+    with timed("waypoint_finder.classify_waypoint_candidates", "gpt-4o-mini", "openai"):
+        if MOCK:
+            await fake_latency(10.74, 18.16)
+            final = WaypointFinderAgentOutput.model_validate(load_fixture("waypoint_classify"))
+        else:
+            response = await Runner.run(validator_agent, input=user_prompt, max_turns=1)
+            final = response.final_output
+            record_fixture("waypoint_classify", final.model_dump(mode="json"))
     normalized_route_waypoints = []
-    for route in response.final_output.route_waypoints:
+    for route in final.route_waypoints:
         normalized_candidates = []
         for candidate in route.candidates:
             key = (
@@ -319,4 +336,4 @@ async def classify_waypoint_candidates(
     logger.info(
         f"{color.BRIGHT_GREEN}Reduced {old_len} waypoints to {new_len} waypoints after classification.{color.RESET}"
     )
-    return response.final_output.model_copy(update={"route_waypoints": normalized_route_waypoints})
+    return final.model_copy(update={"route_waypoints": normalized_route_waypoints})

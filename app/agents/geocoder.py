@@ -4,31 +4,42 @@ import httpx
 from app.config import settings
 from app.schemas.agent_state import IntentOutput, GeocoderAgentOutput
 import logging
+import asyncio, json, os
+from app.timing import timed
+from app.mock.helper import record_fixture, fake_latency, MOCK, load_fixture
 
 logger = logging.getLogger(__name__)
 
 GOOGLE_GEOCODING_URL = "https://maps.googleapis.com/maps/api/geocode/json"
 
 
+MOCK = os.getenv("MOCK_EXTERNAL") == "1"
 
 async def get_region_context(coordinates: Coordinates) -> dict:
     """
     Returns the region context based on the provided coordinates.
     """
     logger.info(f"\033[94mFetching region context for coordinates: {coordinates}\033[0m")
-    async with httpx.AsyncClient() as client:
-        params = {
-            "latlng": f"{coordinates.lat},{coordinates.lng}",
-            "key": settings.GOOGLE_MAPS_API_KEY
-        }
-        response = await client.get(GOOGLE_GEOCODING_URL, params=params)
-        response.raise_for_status()
+    if MOCK:
+        data = load_fixture("geocode_region")
+        await fake_latency(0.3365, 0.5774)
+    else:
+        async with httpx.AsyncClient() as client:
+            params = {
+                "latlng": f"{coordinates.lat},{coordinates.lng}",
+                "key": settings.GOOGLE_MAPS_API_KEY
+            }
+            with timed("geocoder.get_region_context", "geocode_reverse", "google") as t:
+                response = await client.get(GOOGLE_GEOCODING_URL, params=params)
+                t["status"] = response.status_code
+            response.raise_for_status()
 
-        data = response.json()
+            data = response.json()
+            record_fixture("geocode_region", data)
 
-        if data["status"] != "OK":
-            raise ValueError(f"Error from Google Geocoding API: {data['status']}")
-        return data
+    if data["status"] != "OK":
+        raise ValueError(f"Error from Google Geocoding API: {data['status']}")
+    return data
     
 async def get_coordinates_from_address(address: str) -> Coordinates:
     """
@@ -40,11 +51,17 @@ async def get_coordinates_from_address(address: str) -> Coordinates:
     }
 
     logger.info(f"\033[94mFetching coordinates for address: {address}\033[0m")
-    async with httpx.AsyncClient() as client:
-        response = await client.get(GOOGLE_GEOCODING_URL, params=params)
-        response.raise_for_status()
-
-    data = response.json()
+    if MOCK:
+        data = load_fixture("geocode_forward")
+        await fake_latency(0.348, 0.505)
+    else:
+        async with httpx.AsyncClient() as client:
+            with timed("geocoder.get_coordinates_from_address", "geocode_forward", "google") as t:
+                response = await client.get(GOOGLE_GEOCODING_URL, params=params)
+                t["status"] = response.status_code
+            response.raise_for_status()
+            data = response.json()
+    record_fixture("geocode_forward", data)
 
     if data["status"] != "OK":
         raise ValueError(f"Error from Google Geocoding API: {data['status']}")

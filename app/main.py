@@ -6,6 +6,7 @@ from app.agents.intent_normalizer import normalize_intent
 from app.schemas.agent_state import Coordinates, RoutePlannerContext
 from app.agents.route_planner import plan_route
 import logging
+from app.timing import timed
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -47,7 +48,8 @@ def health_check() -> dict:
 
 @app.post("/plan_route")
 async def plan_route_api(request: PlanRouteRequest):
-    result = await run_route_planner(request)
+    with timed("main.plan_route_api", "total_request", "total"):
+        result = await run_route_planner(request)
     return result
 
 

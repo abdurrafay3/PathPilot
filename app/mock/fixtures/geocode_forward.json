@@ -1,0 +1,75 @@
+{
+  "results": [
+    {
+      "address_components": [
+        {
+          "long_name": "19",
+          "short_name": "19",
+          "types": [
+            "street_number"
+          ]
+        },
+        {
+          "long_name": "Luk Hop Street",
+          "short_name": "Luk Hop St",
+          "types": [
+            "route"
+          ]
+        },
+        {
+          "long_name": "San Po Kong",
+          "short_name": "San Po Kong",
+          "types": [
+            "neighborhood",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Kowloon",
+          "short_name": "Kowloon",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Hong Kong",
+          "short_name": "HK",
+          "types": [
+            "country",
+            "political"
+          ]
+        }
+      ],
+      "formatted_address": "19 Luk Hop St, San Po Kong, Kowloon, Hong Kong",
+      "geometry": {
+        "location": {
+          "lat": 22.3373351,
+          "lng": 114.1996225
+        },
+        "location_type": "ROOFTOP",
+        "viewport": {
+          "northeast": {
+            "lat": 22.3386098802915,
+            "lng": 114.2009189802915
+          },
+          "southwest": {
+            "lat": 22.3359119197085,
+            "lng": 114.1982210197085
+          }
+        }
+      },
+      "partial_match": true,
+      "place_id": "ChIJ5e57uesHBDQR2fmz0xzaif0",
+      "plus_code": {
+        "compound_code": "85PX+WR San Po Kong, Hong Kong",
+        "global_code": "7PJP85PX+WR"
+      },
+      "types": [
+        "establishment",
+        "point_of_interest"
+      ]
+    }
+  ],
+  "status": "OK"
+}

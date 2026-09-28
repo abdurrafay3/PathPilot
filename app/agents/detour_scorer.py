@@ -5,7 +5,10 @@ from collections import defaultdict
 from itertools import product
 from app.schemas.agent_state import CandidateRoute, CandidateRouteAgentOutput, Coordinates, DetourRoute, DetourScorerOutput, GeocoderAgentOutput, IntentOutput, WayPointCandidate, WaypointFinderAgentOutput, RoutePlannerContext, DetourScore
 import logging
+from app.timing import timed
+from app.mock.helper import record_fixture
 from app.config import settings, color
+from app.mock.helper import MOCK, load_fixture, fake_latency
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +88,9 @@ async def fetch_route(origin : Coordinates, destination : Coordinates, intent_ou
 
     try:
         async with httpx.AsyncClient(timeout=20.0) as client:
-            response = await client.post(GOOGLE_ROUTES_URL, json=body, headers=headers)
+            with timed("detour_scorer.fetch_route", "routes_compute", "google") as t:
+                response = await client.post(GOOGLE_ROUTES_URL, json=body, headers=headers)
+                t["status"] = response.status_code
             if response.status_code >= 400:
                 logger.info(f"\033[91mGoogle Routes status: {response.status_code}\033[0m")
                 logger.info(f"\033[91mGoogle Routes response: {response.text}\033[0m")
@@ -99,6 +104,7 @@ async def fetch_route(origin : Coordinates, destination : Coordinates, intent_ou
                 return None  # Return None if there's an error in the response
             response.raise_for_status()
             data = response.json()
+            record_fixture("routes_fetch", data)
             routes = data.get("routes", [])
             if not routes:
                 logger.error(f"No route found in the response: {data}")
@@ -231,26 +237,33 @@ async def fetch_detour_route(origin : Coordinates, destination : Coordinates , w
     }
 
     try:
-        async with httpx.AsyncClient(timeout=20.0) as client:
-            response = await client.post(GOOGLE_ROUTES_URL, json=body, headers=headers)
-            if response.status_code >= 400:
-                logger.info(f"\033[91mGoogle Routes status: {response.status_code}\033[0m")
-                logger.info(f"\033[91mGoogle Routes response: {response.text}\033[0m")
-                try: 
-                    error_data = response.json()
-                    error_code = error_data.get("error", {}).get("code")
-                    error_message = error_data.get("error", {}).get("message")
-                    logger.error(f"\033[91mError fetching detour route: {error_code} - {error_message}\033[0m")
-                except Exception as e:
-                    logger.error(f"\033[91mError fetching detour route: {response.status_code} - {response.text}\033[0m")
-                return None  # Return None if there's an error in the response
-            response.raise_for_status()
-            data = response.json()
-            routes = data.get("routes", [])
-            if not routes:
-                logger.error(f"No route found in the response: {data}")
-                return None  # Return None if no route is found
-            route = routes[0]
+        if MOCK:
+            data = load_fixture("routes_detour")
+            await fake_latency(0.33, 0.3774)
+        else:
+            async with httpx.AsyncClient(timeout=20.0) as client:
+                with timed("detour_scorer.fetch_detour_route", "routes_compute", "google") as t:
+                    response = await client.post(GOOGLE_ROUTES_URL, json=body, headers=headers)
+                    t["status"] = response.status_code
+                if response.status_code >= 400:
+                    logger.info(f"\033[91mGoogle Routes status: {response.status_code}\033[0m")
+                    logger.info(f"\033[91mGoogle Routes response: {response.text}\033[0m")
+                    try: 
+                        error_data = response.json()
+                        error_code = error_data.get("error", {}).get("code")
+                        error_message = error_data.get("error", {}).get("message")
+                        logger.error(f"\033[91mError fetching detour route: {error_code} - {error_message}\033[0m")
+                    except Exception as e:
+                        logger.error(f"\033[91mError fetching detour route: {response.status_code} - {response.text}\033[0m")
+                    return None  # Return None if there's an error in the response
+                response.raise_for_status()
+                data = response.json()
+        record_fixture("routes_detour", data)
+        routes = data.get("routes", [])
+        if not routes:
+            logger.error(f"No route found in the response: {data}")
+            return None  # Return None if no route is found
+        route = routes[0]
     except httpx.HTTPStatusError as e:
         logger.error(f"HTTP error occurred while fetching detour route: {e.response.status_code} - {e.response.text}")
         return None
