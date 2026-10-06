@@ -49,6 +49,11 @@ Rules:
 - If travel mode is missing, use "auto".
 - If optimization goal is missing, use "fastest_valid_route".
 - Add assumptions for defaults and typo corrections.
+- Always set destination.value to a specific, geocodable place name including the city,
+  never a generic category. Use the user's address to pick the right one.
+  e.g. "the airport" → "Hong Kong International Airport, Hong Kong";
+       "central" → "Central, Hong Kong Island, Hong Kong".
+
 """
 
 

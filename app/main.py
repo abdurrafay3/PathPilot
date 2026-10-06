@@ -1,7 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from app.agents.geocoder import get_region_context
+from app.agents.geocoder import get_region_context, GeocodingError
 from app.agents.intent_normalizer import normalize_intent
 from app.schemas.agent_state import Coordinates, RoutePlannerContext
 from app.agents.route_planner import plan_route
@@ -49,7 +49,10 @@ def health_check() -> dict:
 @app.post("/plan_route")
 async def plan_route_api(request: PlanRouteRequest):
     with timed("main.plan_route_api", "total_request", "total"):
-        result = await run_route_planner(request)
+        try:
+            result = await run_route_planner(request)
+        except GeocodingError as e:
+            raise HTTPException(status_code=422, detail=str(e))
     return result
 
 
@@ -68,6 +71,9 @@ async def run_route_planner(request: PlanRouteRequest):
         current_location=request.origin,
         region_context=region_context,
     )
+    intent_output.destination.coordinates = None
+    if intent_output.origin.coordinates != request.origin:
+        intent_output.origin.coordinates = None
     context.intent_output = intent_output
     result = await plan_route(context)
     logger.info(f"\033[92mCandidate routes are now fetched!\033[0m")

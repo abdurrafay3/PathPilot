@@ -68,10 +68,11 @@ async def plan_route(ctx: RoutePlannerContext) -> ConstraintValidatorAgentOutput
                 ctx.detour_scorer_output, ctx.candidate_route_output
             )
         return ctx.constraint_validator_output
-
-    tools = [produce_origin_destination_tool, fetch_candidate_routes_tool, find_waypoint_candidates_tool, score_detours_tool, validate_constraints_tool]
-    route_planner = Agent(name="route_planner", instructions=system_prompt, model="gpt-4o-mini", output_type=RoutePlannerOutput, tools=tools)
     with timed("route_planner.plan_route", "agent_run_incl_tools", "openai"):
-        route_planner_runner = await Runner.run(starting_agent=route_planner, input=user_prompt, context=ctx)
-    result = route_planner_runner.final_output
-    return result
+        ctx.geocoder_output = await produce_origin_destination(intent_normalizer_output=ctx.intent_output)
+        ctx.candidate_route_output = await fetch_candidate_routes(ctx.geocoder_output, ctx.intent_output)
+        if ctx.intent_output.required_stops:
+            ctx.waypoint_finder_output = await find_waypoint_candidates(ctx.candidate_route_output, ctx.intent_output.required_stops, ctx.intent_output)
+            ctx.detour_scorer_output = await score_detours(ctx.candidate_route_output, ctx.waypoint_finder_output, ctx.geocoder_output, ctx.intent_output)
+        ctx.constraint_validator_output = await validate_constraints(ctx.detour_scorer_output, ctx.candidate_route_output)
+    return ctx.constraint_validator_output

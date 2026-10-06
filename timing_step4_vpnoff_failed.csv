@@ -1,0 +1,25 @@
+Function,Call,Kind,Time Taken,Status
+geocoder.get_region_context,geocode_reverse,google,0.281,200
+intent_normalizer.normalize_intent,gpt-4o-mini,openai,0.28,PermissionDeniedError
+main.plan_route_api,total_request,total,0.577,PermissionDeniedError
+geocoder.get_region_context,geocode_reverse,google,0.107,200
+intent_normalizer.normalize_intent,gpt-4o-mini,openai,0.1,PermissionDeniedError
+main.plan_route_api,total_request,total,0.223,PermissionDeniedError
+geocoder.get_region_context,geocode_reverse,google,0.128,200
+intent_normalizer.normalize_intent,gpt-4o-mini,openai,0.018,PermissionDeniedError
+main.plan_route_api,total_request,total,0.164,PermissionDeniedError
+geocoder.get_region_context,geocode_reverse,google,0.123,200
+intent_normalizer.normalize_intent,gpt-4o-mini,openai,0.013,PermissionDeniedError
+main.plan_route_api,total_request,total,0.145,PermissionDeniedError
+geocoder.get_region_context,geocode_reverse,google,0.2,200
+intent_normalizer.normalize_intent,gpt-4o-mini,openai,0.017,PermissionDeniedError
+main.plan_route_api,total_request,total,0.229,PermissionDeniedError
+geocoder.get_region_context,geocode_reverse,google,0.144,200
+intent_normalizer.normalize_intent,gpt-4o-mini,openai,0.021,PermissionDeniedError
+main.plan_route_api,total_request,total,0.18,PermissionDeniedError
+geocoder.get_region_context,geocode_reverse,google,0.134,200
+intent_normalizer.normalize_intent,gpt-4o-mini,openai,0.018,PermissionDeniedError
+main.plan_route_api,total_request,total,0.165,PermissionDeniedError
+geocoder.get_region_context,geocode_reverse,google,0.199,200
+intent_normalizer.normalize_intent,gpt-4o-mini,openai,0.017,PermissionDeniedError
+main.plan_route_api,total_request,total,0.23,PermissionDeniedError

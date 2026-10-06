@@ -10,6 +10,7 @@ from app.schemas.agent_state import (
     WayPointCandidate,
     Coordinates,
 )
+from app.schemas.waypoint import waypoint_agent_prompt, ClassifierOutput
 import polyline
 import logging
 from app.timing import timed
@@ -17,6 +18,7 @@ from app.mock.helper import record_fixture
 from agents import Agent, RunContextWrapper, Runner, function_tool
 from app.config import settings
 from math import radians, cos, sin, asin, sqrt
+import asyncio
 from app.mock.helper import MOCK, fake_latency, load_fixture
 
 logger = logging.getLogger(__name__)
@@ -55,14 +57,18 @@ async def search_nearest_waypoints(coordinates: tuple, waypoint_type: str) -> li
             }
         },
     }
-    
+
     try:
         if MOCK:
             data = load_fixture("places_nearby")
             await fake_latency(0.37, 0.57)
         else:
             async with httpx.AsyncClient(timeout=10.0) as client:
-                with timed("waypoint_finder.search_nearest_waypoints", "places_nearby", "google") as t:
+                with timed(
+                    "waypoint_finder.search_nearest_waypoints",
+                    "places_nearby",
+                    "google",
+                ) as t:
                     response = await client.post(
                         GOOGLE_NEARBY_PLACES_URL, headers=headers, json=body
                     )
@@ -73,7 +79,7 @@ async def search_nearest_waypoints(coordinates: tuple, waypoint_type: str) -> li
         return data.get("places", [])
     except httpx.RequestError as e:
         logger.error(
-            f"\033[91mAn error occurred while requesting the Google Nearby Places API: {e}, Error: {e.response.text}\033[0m"
+            f"\033[91mAn error occurred while requesting the Google Nearby Places API: {e}\033[0m"
         )
         return []
     except httpx.HTTPStatusError as e:
@@ -152,6 +158,14 @@ def get_sampled_coordinates(decoded_polyline, max_samples=5):
     return unique_sampled_coordinates
 
 
+PLACES_CONCURRENCY = asyncio.Semaphore(10)
+
+
+async def _search_limited(coords: tuple, place_type: str) -> list:
+    async with PLACES_CONCURRENCY:
+        return await search_nearest_waypoints(coords, place_type)
+
+
 async def find_waypoint_candidates(
     route_candidate_input: CandidateRouteAgentOutput,
     required_stops: list[RequiredStop],
@@ -171,53 +185,69 @@ async def find_waypoint_candidates(
             logger.info(f"\033[95mProcessing route {route.route_id}\033[0m")
             decoded_polyline = polyline.decode(route.polyline)
             sampled_coordinates = get_sampled_coordinates(decoded_polyline)
-            for required_stop_index, required_stop in enumerate(required_stops):
-                for google_place_type in required_stop.place_type:
-                    for route_sample_index, (route_lat, route_lng) in enumerate(sampled_coordinates):
-                        nearest_waypoints = await search_nearest_waypoints(
-                            (route_lat, route_lng), google_place_type
-                        )
-                        logger.info(
-                            f"\033[94m Sampled coordinate: ({route_lat}, {route_lng})\033[0m"
-                        )
-                        for waypoint in nearest_waypoints:
-                            waypoint_id = waypoint.get("id")
-                            name = waypoint.get("displayName", {}).get("text")
-                            lat = waypoint.get("location", {}).get("latitude")
-                            lng = waypoint.get("location", {}).get("longitude")
-                            coordinates = Coordinates(lat=lat, lng=lng)
-                            near_route_id = route.route_id
-                            distance_from_route_metres = haversine_distance(
-                                lat, lng, route_lat, route_lng
-                            )
-                            rating = waypoint.get("rating")
-                            open_now = waypoint.get("currentOpeningHours", {}).get(
-                                "openNow"
-                            )
-                            waypoint_candidate = WayPointCandidate(
-                                name=name,
-                                place_type=google_place_type,
-                                coordinates=coordinates,
-                                near_route_id=near_route_id,
-                                distance_from_route_metres=distance_from_route_metres,
-                                rating=rating,
-                                open_now=open_now,
-                                required_stop_index=required_stop_index,
-                                route_sample_index=route_sample_index,
-                            )
+            searches = [
+                (
+                    required_stop_index,
+                    google_place_type,
+                    route_sample_index,
+                    route_lat,
+                    route_lng,
+                )
+                for required_stop_index, required_stop in enumerate(required_stops)
+                for google_place_type in required_stop.place_type
+                for route_sample_index, (route_lat, route_lng) in enumerate(
+                    sampled_coordinates
+                )
+            ]
+            results = await asyncio.gather(
+                *(
+                    _search_limited((lat, lng), place_type)
+                    for _, place_type, _, lat, lng in searches
+                )
+            )
+            for (
+                required_stop_index,
+                google_place_type,
+                route_sample_index,
+                route_lat,
+                route_lng,
+            ), nearest_waypoints in zip(searches, results):
+                for waypoint in nearest_waypoints:
+                    waypoint_id = waypoint.get("id")
+                    name = waypoint.get("displayName", {}).get("text")
+                    lat = waypoint.get("location", {}).get("latitude")
+                    lng = waypoint.get("location", {}).get("longitude")
+                    coordinates = Coordinates(lat=lat, lng=lng)
+                    near_route_id = route.route_id
+                    distance_from_route_metres = haversine_distance(
+                        lat, lng, route_lat, route_lng
+                    )
+                    rating = waypoint.get("rating")
+                    open_now = waypoint.get("currentOpeningHours", {}).get("openNow")
+                    waypoint_candidate = WayPointCandidate(
+                        name=name,
+                        place_type=google_place_type,
+                        coordinates=coordinates,
+                        near_route_id=near_route_id,
+                        distance_from_route_metres=distance_from_route_metres,
+                        rating=rating,
+                        open_now=open_now,
+                        required_stop_index=required_stop_index,
+                        route_sample_index=route_sample_index,
+                    )
 
-                            key = (near_route_id, waypoint_id, required_stop_index)
-                            if key not in seen_waypoints:
-                                seen_waypoints[key] = waypoint_candidate
-                                logger.info(
-                                    f"\033[95mWaypoint candidate found. Name : {waypoint_candidate.name}\033[0m"
-                                )
-                            else:
-                                if (
-                                    seen_waypoints[key].distance_from_route_metres
-                                    > distance_from_route_metres
-                                ):
-                                    seen_waypoints[key] = waypoint_candidate
+                    key = (near_route_id, waypoint_id, required_stop_index)
+                    if key not in seen_waypoints:
+                        seen_waypoints[key] = waypoint_candidate
+                        logger.info(
+                            f"\033[95mWaypoint candidate found. Name : {waypoint_candidate.name}\033[0m"
+                        )
+                    else:
+                        if (
+                            seen_waypoints[key].distance_from_route_metres
+                            > distance_from_route_metres
+                        ):
+                            seen_waypoints[key] = waypoint_candidate
         waypoint_candidates.route_waypoints.append(
             RouteWaypointCandidate(
                 route_id=route.route_id, candidates=list(seen_waypoints.values())
@@ -232,6 +262,14 @@ async def find_waypoint_candidates(
     return classified_result
 
 
+classifier_agent = Agent(
+    name="classifier agent",
+    instructions=waypoint_agent_prompt,
+    model="gpt-4o-mini",
+    output_type=ClassifierOutput,
+)
+
+
 async def classify_waypoint_candidates(
     waypoint_candidates: WaypointFinderAgentOutput, intent_output: IntentOutput
 ) -> WaypointFinderAgentOutput:
@@ -240,100 +278,50 @@ async def classify_waypoint_candidates(
     Returns:
         WaypointFinderAgentOutput: An object containing the classified waypoint candidates.
     """
-
-    system_prompt = """
-    You are a strict waypoint classification agent for a route planning app.
-
-    Your task is to filter waypoint candidates based on the user's required stops.
-
-    You will receive:
-    1. The user's structured intent.
-    2. A list of waypoint candidates returned by Google Places.
-
-    Return only candidates that truly satisfy the user's requested stop.
-
-    General rule:
-    A candidate is valid only if a normal user would agree that this place satisfies the requested stop.
-    Do not accept a candidate merely because Google returned it under a broad or related place type.
-    Judge mainly from the candidate name and the user's original requested stop.
-
-    Be strict:
-    - If the user asks for a hospital, keep actual hospitals, emergency departments, or hospital buildings.
-    - If the user asks for a clinic, keep actual clinics or clearly named medical centres.
-    - If the user asks for a pharmacy, keep actual pharmacies or drugstores.
-    - If the user asks for a cafe, keep actual cafes.
-    - If the user asks for an ATM, keep actual ATMs.
-    - For any other requested stop type, apply the same logic: keep only places that clearly match the user's requested category.
-
-    Reject:
-    - Places that are only loosely related to the requested stop.
-    - Businesses that provide a related service but are not the requested type.
-    - Ambiguous candidates.
-    - Associations, offices, labs, education centres, wellness centres, animal services, or generic companies unless they clearly match the requested stop.
-
-    Do not invent new waypoint candidates.
-    Do not change coordinates, route IDs, ratings, open_now values, distances, or names.
-    Preserve the original output schema exactly.
-    Keep route_id groups the same.
-    Only remove invalid candidates from each route's candidates list.
-    """
-
     logger.info(f"\033[94mRunning Waypoint Classification Tool\033[0m")
 
-    old_len = sum(
-        len(route.candidates) for route in waypoint_candidates.route_waypoints
-    )
-    original_candidates = {}
+    def place_key(c: WayPointCandidate):
+        return (c.name, c.coordinates.lat, c.coordinates.lng, c.required_stop_index)
+
+    ids: dict[tuple, int] = {}
+    lines = []
     for route in waypoint_candidates.route_waypoints:
-        for candidate in route.candidates:
-            key = (
-                route.route_id,
-                candidate.name,
-                candidate.place_type,
-                candidate.coordinates.lat,
-                candidate.coordinates.lng,
-                candidate.required_stop_index,
-            )
-            original_candidates[key] = candidate
+        for c in route.candidates:
+            key = place_key(c)
+            if key not in ids:
+                ids[key] = len(ids)
+                stop = intent_output.required_stops[c.required_stop_index or 0]
+                wants = ", ".join(stop.place_type)
+                lines.append(
+                    f'{ids[key]}: "{c.name}" (Google type: {c.place_type}) -> wants : {wants}'
+                )
+    if not ids:
+        return waypoint_candidates
 
-    validator_agent = Agent(
-        name="waypoint classifier",
-        instructions=system_prompt,
-        model="gpt-4o-mini",
-        output_type=WaypointFinderAgentOutput,
+    user_prompt = (
+        f"User request: {intent_output.cleaned_prompt}\n\nCandidates: \n"
+        + "\n".join(lines)
     )
-
-    user_prompt = f"User's intent: \n\n {intent_output.model_dump_json(indent=2)}\n\n Waypoint candidates: \n\n {waypoint_candidates.model_dump_json(indent=2)}\n\n Please classify the waypoint candidates based on the user's required stops and return the filtered output in the same schema."
-
     with timed("waypoint_finder.classify_waypoint_candidates", "gpt-4o-mini", "openai"):
         if MOCK:
             await fake_latency(10.74, 18.16)
-            final = WaypointFinderAgentOutput.model_validate(load_fixture("waypoint_classify"))
+            keep = set(ids.values())
         else:
-            response = await Runner.run(validator_agent, input=user_prompt, max_turns=1)
-            final = response.final_output
-            record_fixture("waypoint_classify", final.model_dump(mode="json"))
-    normalized_route_waypoints = []
-    for route in final.route_waypoints:
-        normalized_candidates = []
-        for candidate in route.candidates:
-            key = (
-                route.route_id,
-                candidate.name,
-                candidate.place_type,
-                candidate.coordinates.lat,
-                candidate.coordinates.lng,
-                candidate.required_stop_index,
+            response = await Runner.run(
+                classifier_agent, input=user_prompt, max_turns=1
             )
-            original_candidate = original_candidates.get(key)
-            normalized_candidates.append(original_candidate or candidate)
-        normalized_route_waypoints.append(
-            route.model_copy(update={"candidates": normalized_candidates})
+            keep = set(response.final_output.keep_ids)
+    filtered = [
+        route.model_copy(
+            update={
+                "candidates": [c for c in route.candidates if ids[place_key(c)] in keep]
+            }
         )
-    new_len = sum(
-        len(route.candidates) for route in normalized_route_waypoints
-    )
+        for route in waypoint_candidates.route_waypoints
+    ]
+    old_len = sum(len(r.candidates) for r in waypoint_candidates.route_waypoints)
+    new_len = sum(len(r.candidates) for r in filtered)
     logger.info(
         f"{color.BRIGHT_GREEN}Reduced {old_len} waypoints to {new_len} waypoints after classification.{color.RESET}"
     )
-    return final.model_copy(update={"route_waypoints": normalized_route_waypoints})
+    return waypoint_candidates.model_copy(update={"route_waypoints": filtered})

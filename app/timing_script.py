@@ -10,7 +10,7 @@ def make_test_calls():
     This function makes about 15 test calls to the server. It starts the next one when the previous one has finished or timed out. It reads the prompts from example_prompts.txt
     """
     ## lets first start the server 
-    with open("app/example_prompts.txt", "r") as f:
+    with open("app/loadtest/example_prompts.txt", "r") as f:
         lines = f.readlines()
         prompts = [line.strip() for line in lines]
         # now for each prompt
