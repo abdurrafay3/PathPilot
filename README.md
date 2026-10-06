@@ -265,6 +265,6 @@ Issues and pull requests are welcome. Before opening a pull request:
 
 ## License
 
-No license has been selected for this repository yet. If you publish PathPilot
-for reuse, add a `LICENSE` file and update this section so that others know
-what they are permitted to do with the code.
+PathPilot is licensed under the [PolyForm Noncommercial License 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0/). You're free to use, modify, and share it for noncommercial purposes. Commercial use, including selling it, isn't permitted. See the [LICENSE](LICENSE) file for the full terms.
+
+Required Notice: Copyright (c) 2026 Abdur Rafay Khan
