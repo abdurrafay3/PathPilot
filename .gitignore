@@ -15,3 +15,8 @@ node_modules/
 .DS_Store
 frontend/.DS_Store
 timing.csv
+*.log
+*.tsbuildinfo
+timing_*.csv
+
+countlinesinproject.sh
